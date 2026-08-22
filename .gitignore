@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+yarn-lock.txt
+package-lock.json
+
+# Runtime
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+
+# Build outputs
+dist/
+/dist/
+/dist/app/
+
+# TypeScript
+*.tsbuildinfo
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.suo
+
+# Vite
+/.vite
+
+# Production
+/.vercel
+/.github
+
+# Next.js
+/.next/
+/next/
+/out/
+
+# npm
+.npm
+
+# Rome
+.rome
+
+# Turborepo
+/turbo
+
+# Naïve UI
+.naiveui
+
+# Bun
+.bun
+
+# environment env files
+.env*
