@@ -6,6 +6,7 @@ import eventRoutes, { mountStats } from "./routes/event.routes.js"
 import guestRoutes from "./routes/guest.routes.js"
 import taskRoutes from "./routes/task.routes.js"
 import reminderRoutes from "./routes/reminder.routes.js"
+import adminRoutes from "./routes/admin.routes.js"
 
 const app = express()
 const PORT = process.env.PORT ?? 3001
@@ -23,6 +24,7 @@ app.use("/api/events", eventRoutes)
 app.use("/api/events/:eventId/guests", guestRoutes)
 app.use("/api/events/:eventId/tasks", taskRoutes)
 app.use("/api/events/:eventId/reminders", reminderRoutes)
+app.use("/api/admin", adminRoutes)
 
 /* 404 para rutas de API desconocidas */
 app.use("/api", (_req, res) => {

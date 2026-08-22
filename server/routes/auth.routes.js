@@ -23,7 +23,7 @@ const loginSchema = z.object({
 })
 
 function publicUser(row) {
-  return { id: row.id, name: row.name, email: row.email }
+  return { id: row.id, name: row.name, email: row.email, role: row.role }
 }
 
 /* POST /api/auth/register */
@@ -44,7 +44,7 @@ router.post("/register", async (req, res) => {
     .run(name, email.toLowerCase(), hashPassword(password))
 
   const user = db
-    .prepare("SELECT id, name, email FROM users WHERE id = ?")
+    .prepare("SELECT id, name, email, role FROM users WHERE id = ?")
     .get(result.lastInsertRowid)
 
   const token = await signToken({ sub: String(user.id) })
@@ -60,7 +60,9 @@ router.post("/login", async (req, res) => {
   const { email, password } = parsed.data
 
   const user = db
-    .prepare("SELECT id, name, email, password_hash FROM users WHERE email = ?")
+    .prepare(
+      "SELECT id, name, email, role, password_hash FROM users WHERE email = ?"
+    )
     .get(email.toLowerCase())
 
   if (!user || !verifyPassword(password, user.password_hash)) {
@@ -74,7 +76,7 @@ router.post("/login", async (req, res) => {
 /* GET /api/auth/me */
 router.get("/me", requireAuth, (req, res) => {
   const user = db
-    .prepare("SELECT id, name, email FROM users WHERE id = ?")
+    .prepare("SELECT id, name, email, role FROM users WHERE id = ?")
     .get(req.userId)
   if (!user) return res.status(404).json({ error: "Usuario no encontrado." })
   res.json({ user: publicUser(user) })

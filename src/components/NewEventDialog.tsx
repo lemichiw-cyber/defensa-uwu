@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useToast } from "@/components/ui/toast/ToastContext"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -72,10 +71,7 @@ const EventForm = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    useToast().toast({
-      message: editing ? "Evento actualizado correctamente" : "Evento creado correctamente",
-      variant: "default",
-    })
+    /* El toast de éxito se muestra desde App.handleSave tras confirmar la API */
     onSubmit({
       title: form.title.trim(),
       description: form.description.trim() || undefined,
@@ -84,7 +80,6 @@ const EventForm = ({
       location: form.location.trim(),
       image: form.image.trim() || FALLBACK_IMAGE,
     })
-    onCancel()
   }
 
   return (

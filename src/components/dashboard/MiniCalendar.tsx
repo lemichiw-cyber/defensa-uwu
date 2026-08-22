@@ -1,9 +1,9 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { DEMO_TODAY, EVENT_DATES } from "@/data/events"
+import { eventsApi, type EventItem } from "@/lib/api"
 
 const WEEKDAYS = ["L", "M", "X", "J", "V", "S", "D"]
 const MONTHS = [
@@ -14,10 +14,27 @@ const MONTHS = [
 const pad = (n: number) => String(n).padStart(2, "0")
 
 export function MiniCalendar() {
-  const [cursor, setCursor] = useState({ year: DEMO_TODAY.year, month: DEMO_TODAY.month })
-  const [selected, setSelected] = useState<string | null>("2024-05-15")
+  const hoy = new Date()
+  const [cursor, setCursor] = useState({ year: hoy.getFullYear(), month: hoy.getMonth() })
+  const [selected, setSelected] = useState<string | null>(null)
+  /* Días que tienen eventos próximos reales */
+  const [eventDays, setEventDays] = useState<Set<string>>(new Set())
 
   const { year, month } = cursor
+
+  useEffect(() => {
+    let cancelled = false
+    eventsApi
+      .list({ status: "proximo" })
+      .then((res: { events: EventItem[] }) => {
+        if (cancelled) return
+        setEventDays(new Set(res.events.map((ev) => ev.date.slice(0, 10))))
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const cells = useMemo(() => {
     const daysInMonth = new Date(year, month + 1, 0).getDate()
@@ -35,7 +52,7 @@ export function MiniCalendar() {
 
   const isoFor = (day: number) => `${year}-${pad(month + 1)}-${pad(day)}`
   const isToday = (day: number) =>
-    day === DEMO_TODAY.day && month === DEMO_TODAY.month && year === DEMO_TODAY.year
+    day === hoy.getDate() && month === hoy.getMonth() && year === hoy.getFullYear()
 
   return (
     <Card className="p-5 shadow-sm">
@@ -80,7 +97,7 @@ export function MiniCalendar() {
               )}
             >
               {day}
-              {EVENT_DATES.has(iso) && (
+              {eventDays.has(iso) && (
                 <span
                   className={cn(
                     "absolute bottom-1 size-1 rounded-full",
@@ -92,6 +109,10 @@ export function MiniCalendar() {
           )
         })}
       </div>
+
+      <p className="mt-3 text-center text-xs text-gray-500">
+        Los puntos indican días con eventos próximos.
+      </p>
     </Card>
   )
 }

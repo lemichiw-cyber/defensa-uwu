@@ -137,6 +137,10 @@ export function LoginPage({ onSuccess }: { onSuccess: () => void }) {
           >
             <CheckCircle2 size={14} /> Usar demo (maria@mievento.com / demo1234)
           </button>
+          <p className="mt-2 text-center text-xs text-gray-500">
+            <strong>Admin:</strong> maria@mievento.com / demo1234 ·{" "}
+            <strong>Usuario común:</strong> carlos@mievento.com / demo1234
+          </p>
         </div>
       </div>
     </Card>

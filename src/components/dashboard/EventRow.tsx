@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { formatDate, type EventItem } from "@/data/events"
+import { useAuth } from "@/context/AuthContext"
 
 interface EventRowProps {
   event: EventItem
@@ -18,6 +19,7 @@ interface EventRowProps {
 }
 
 export function EventRow({ event, onEdit, onDelete }: EventRowProps) {
+  const { esAdmin } = useAuth()
   return (
     <Card className="group flex items-center gap-4 p-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md sm:p-4">
       <img
@@ -65,13 +67,17 @@ export function EventRow({ event, onEdit, onDelete }: EventRowProps) {
           <DropdownMenuItem onClick={() => onEdit(event)}>
             <Pencil /> Editar
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => onDelete(event.id)}
-            className="text-red-600 focus:bg-red-50 focus:text-red-700"
-          >
-            <Trash2 /> Eliminar
-          </DropdownMenuItem>
+          {esAdmin && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => onDelete(event.id)}
+                className="text-red-600 focus:bg-red-50 focus:text-red-700"
+              >
+                <Trash2 /> Eliminar
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </Card>

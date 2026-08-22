@@ -19,8 +19,17 @@ interface LandingProps {
 export function Landing({ onNewEvent, onSeeEvents }: LandingProps) {
   return (
     <>
-      {/* HERO */}
+      {/* HERO con video de fondo (estilo EduGest) */}
       <section className="relative overflow-hidden bg-gradient-to-b from-violet-50 via-white to-white">
+        <video
+          className="absolute inset-0 size-full object-cover opacity-25"
+          src="/videos/paradise-sunset.720p.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          aria-hidden
+        />
         <div className="pointer-events-none absolute -left-32 top-10 size-96 rounded-full bg-violet-200/40 blur-3xl" />
         <div className="pointer-events-none absolute -right-24 bottom-0 size-80 rounded-full bg-violet-100/60 blur-3xl" />
 

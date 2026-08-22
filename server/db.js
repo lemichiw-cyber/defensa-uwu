@@ -15,6 +15,8 @@ db.exec(`
     name          TEXT    NOT NULL,
     email         TEXT    NOT NULL UNIQUE,
     password_hash TEXT    NOT NULL,
+    role          TEXT    NOT NULL DEFAULT 'usuario'
+                  CHECK (role IN ('usuario','admin')),
     created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
   );
 
@@ -74,19 +76,35 @@ function hashPassword(password) {
   return `${salt}:${hash}`
 }
 
+/* Migración: añade la columna role a bases de datos existentes */
+try {
+  db.prepare("SELECT role FROM users LIMIT 1").get()
+} catch {
+  db.exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'usuario';")
+}
+
 function seedIfEmpty() {
   const { n } = db.prepare("SELECT COUNT(*) AS n FROM users").get()
   if (n > 0) return
 
   const insertUser = db.prepare(
-    "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)"
+    "INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)"
   )
-  const info = insertUser.run(
+  /* ADMIN — acceso total a funciones de administración */
+  insertUser.run(
     "María García",
     "maria@mievento.com",
-    hashPassword("demo1234")
+    hashPassword("demo1234"),
+    "admin"
   )
-  const userId = Number(info.lastInsertRowid)
+  /* USUARIO COMÚN — sin funciones de administrador */
+  const infoUsuario = insertUser.run(
+    "Carlos López",
+    "carlos@mievento.com",
+    hashPassword("demo1234"),
+    "usuario"
+  )
+  const userId = Number(infoUsuario.lastInsertRowid)
 
   const insertEvent = db.prepare(`
     INSERT INTO events (user_id, title, description, date, time, location, image_url, status)

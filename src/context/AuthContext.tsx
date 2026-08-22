@@ -1,9 +1,12 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import { authApi, type User } from "@/lib/api"
 
+export type Rol = "usuario" | "admin"
+
 interface AuthContextValue {
   user: User | null
   loading: boolean
+  esAdmin: boolean
   login: (email: string, password: string) => Promise<void>
   register: (name: string, email: string, password: string) => Promise<void>
   logout: () => void
@@ -34,12 +37,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(user)
   }
 
-  // Theme support
-  const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem("mievento-theme")
-    return saved || "pastel"
-  })
-
   const register = async (name: string, email: string, password: string) => {
     const { token, user } = await authApi.register({ name, email, password })
     localStorage.setItem("mievento_token", token)
@@ -51,20 +48,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }
 
-  // Apply theme to HTML element
-  useEffect(() => {
-    const html = document.documentElement
-    html.dataset.theme = theme
-    html.style.setProperty('--primary', theme === 'dark' ? '#6d28d9' : getComputedStyle(document.documentElement).getPropertyValue('--primary').trim())
-    html.style.setProperty('--bg-card', theme === 'dark' ? '#18181b' : '#fff')
-    html.style.setProperty('--bg-sidebar', theme === 'dark' ? '#18181b' : '#f9fafb')
-    html.style.setProperty('--text', theme === 'dark' ? '#f9fafb' : '#111827')
-    html.style.setProperty('--text-secondary', theme === 'dark' ? '#7f8c8d' : '#6b7280')
-    html.style.setProperty('--primary-light', theme === 'dark' ? '#a855f6' : '#f3f4f6')
-  }, [])
+  /* Doble capa (capa 2): el frontend oculta funciones admin a usuarios comunes.
+     La capa 1 es el middleware requireAdmin en el servidor. */
+  const esAdmin = user?.role === "admin"
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, theme, setTheme }}>
+    <AuthContext.Provider value={{ user, loading, esAdmin, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   )

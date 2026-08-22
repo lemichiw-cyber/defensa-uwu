@@ -1,7 +1,7 @@
 import { Router } from "express"
 import { z } from "zod"
 import { db } from "../db.js"
-import { requireAuth, findOwnedEvent, zodMessage } from "../helpers.js"
+import { requireAuth, requireAdmin, findOwnedEvent, zodMessage } from "../helpers.js"
 
 const router = Router()
 router.use(requireAuth)
@@ -14,7 +14,11 @@ const createEventSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida (AAAA-MM-DD)"),
   time: z.string().min(1, "La hora es obligatoria"),
   location: z.string().trim().min(2, "El lugar es obligatorio"),
-  image: z.string().url("URL de imagen inválida").optional().default(""),
+  /* URL válida o cadena vacía (usa el default de la BD) */
+  image: z
+    .union([z.string().trim().url("URL de imagen inválida"), z.literal("")])
+    .optional()
+    .default(""),
   status: z.enum(STATUS_VALUES).optional().default("proximo"),
 })
 
@@ -124,11 +128,18 @@ router.patch("/:id", (req, res) => {
   res.json({ event })
 })
 
-/* DELETE /api/events/:id */
-router.delete("/:id", (req, res) => {
+/* DELETE /api/events/:id — SOLO ADMIN (doble capa). El admin puede borrar cualquier evento */
+router.delete("/:id", requireAdmin, (req, res) => {
   const existing = findOwnedEvent(db, req.userId, Number(req.params.id))
-  if (!existing) return res.status(404).json({ error: "Evento no encontrado." })
-  db.prepare("DELETE FROM events WHERE id = ?").run(existing.id)
+  if (!existing) {
+    const any = db
+      .prepare("SELECT id FROM events WHERE id = ?")
+      .get(Number(req.params.id))
+    if (!any) return res.status(404).json({ error: "Evento no encontrado." })
+  }
+  db.prepare("DELETE FROM events WHERE id = ?").run(
+    existing?.id ?? Number(req.params.id)
+  )
   res.status(204).end()
 })
 

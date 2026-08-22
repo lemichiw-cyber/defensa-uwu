@@ -54,6 +54,7 @@ export interface User {
   id: number
   name: string
   email: string
+  role: "usuario" | "admin"
 }
 
 export interface EventItem {
@@ -157,4 +158,22 @@ export const remindersApi = {
   create: (eventId: number, data: { message: string; remindAt: string }) =>
     api.post<{ reminder: Reminder }>(`/events/${eventId}/reminders`, data),
   delete: (eventId: number, reminderId: number) => api.delete<void>(`/events/${eventId}/reminders/${reminderId}`),
+}
+/* Admin endpoints — requieren rol admin (verificado en servidor) */
+export interface AdminUser {
+  id: number
+  name: string
+  email: string
+  role: "usuario" | "admin"
+  created_at: string
+}
+
+export const adminApi = {
+  users: () => api.get<{ users: AdminUser[] }>("/admin/users"),
+  overview: () =>
+    api.get<{
+      overview: { users: number; events: number; guests: number; tasks: number; reminders: number }
+    }>("/admin/overview"),
+  setRole: (userId: number, role: "usuario" | "admin") =>
+    api.patch<{ ok: boolean }>(`/admin/users/${userId}/role`, { role }),
 }

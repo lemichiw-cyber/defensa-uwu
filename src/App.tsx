@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@/components/ui/theme/ThemeContext"
 import { useState } from "react"
-import { ToastProvider } from "@/components/ui/toast/ToastContext"
+import { ToastProvider, useToast } from "@/components/ui/toast/ToastContext"
 import { Navbar } from "@/components/layout/Navbar"
 import { Footer } from "@/components/layout/Footer"
 import { Dashboard } from "@/pages/Dashboard"
@@ -15,6 +15,7 @@ type View = "landing" | "dashboard"
 
 function AppContent() {
   const { user, loading } = useAuth()
+  const { toast } = useToast()
   const [view, setView] = useState<View>("landing")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingEvent, setEditingEvent] = useState<EventItem | null>(null)
@@ -33,6 +34,12 @@ function AppContent() {
   }
 
   const openNewEvent = () => {
+    /* Guard: sin sesión no se puede crear; mandar a login */
+    if (!user) {
+      toast({ message: "Inicia sesión para crear eventos", variant: "destructive" })
+      setView("dashboard")
+      return
+    }
     setEditingEvent(null)
     setDialogOpen(true)
   }
@@ -50,18 +57,32 @@ function AppContent() {
     location: string
     image: string
   }) => {
-    const apiData = {
-      ...data,
+    const base = {
+      title: data.title,
       description: data.description ?? null,
-      status: "proximo" as const,
+      date: data.date,
+      time: data.time,
+      location: data.location,
+      image: data.image,
     }
-    if (editingEvent) {
-      await eventsApi.update(editingEvent.id, apiData)
-    } else {
-      await eventsApi.create(apiData)
+    try {
+      if (editingEvent) {
+        /* PATCH parcial: no resetea el status actual del evento */
+        await eventsApi.update(editingEvent.id, base)
+        toast({ message: "Evento actualizado correctamente" })
+      } else {
+        await eventsApi.create({ ...base, status: "proximo" })
+        toast({ message: "Evento creado correctamente" })
+      }
+      setDialogOpen(false)
+      setRefreshKey((k) => k + 1)
+    } catch (err) {
+      toast({
+        message:
+          err instanceof Error ? err.message : "No se pudo guardar el evento",
+        variant: "destructive",
+      })
     }
-    setDialogOpen(false)
-    setRefreshKey((k) => k + 1)
   }
 
   return (

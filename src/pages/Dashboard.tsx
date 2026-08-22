@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Sidebar } from "@/components/layout/Sidebar"
 import { sidebarItems } from "@/data/sidebar"
+import { useAuth } from "@/context/AuthContext"
+import { AdminSections } from "@/components/dashboard/sections"
 import { HeroCard } from "@/components/dashboard/HeroCard"
 import { StatsRow } from "@/components/dashboard/StatsRow"
 import { EventRow } from "@/components/dashboard/EventRow"
@@ -21,6 +23,8 @@ interface DashboardProps {
 }
 
 export function Dashboard({ onNewEvent, onEditEvent, onDeleteEvent }: DashboardProps) {
+  const { esAdmin } = useAuth()
+  const { toast } = useToast()
   const [collapsed, setCollapsed] = useState(false)
   const [activeSection, setActiveSection] = useState(sidebarItems[0].id)
 
@@ -30,35 +34,61 @@ export function Dashboard({ onNewEvent, onEditEvent, onDeleteEvent }: DashboardP
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const loadData = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const [eventsRes, statsRes, finishedRes] = await Promise.all([
-        eventsApi.list({ status: "proximo" }),
-        eventsApi.stats(),
-        eventsApi.list({ status: "finalizado", limit: 3 }),
-      ])
-      setEvents(eventsRes.events)
-      setStats(statsRes)
-      setRecentEvents(finishedRes.events)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al cargar datos")
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
-    loadData()
+    let cancelled = false
+    const load = async () => {
+      try {
+        const [eventsRes, statsRes, finishedRes] = await Promise.all([
+          eventsApi.list({ status: "proximo" }),
+          eventsApi.stats(),
+          eventsApi.list({ status: "finalizado", limit: 3 }),
+        ])
+        if (cancelled) return
+        setEvents(eventsRes.events)
+        setStats(statsRes)
+        setRecentEvents(finishedRes.events)
+      } catch (err) {
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : "Error al cargar datos")
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    load()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
+  /* Reintento manual (botón) */
+  const retry = () => {
+    setError(null)
+    setLoading(true)
+    eventsApi
+      .list({ status: "proximo" })
+      .then((eventsRes) => setEvents(eventsRes.events))
+      .catch((err) =>
+        setError(err instanceof Error ? err.message : "Error al cargar datos")
+      )
+      .finally(() => setLoading(false))
+  }
+
   const handleDelete = async (id: number) => {
-    await eventsApi.delete(id)
-    useToast().toast({ message: "Evento eliminado correctamente", variant: "default" })
-    onDeleteEvent(id)
-    setEvents((prev) => prev.filter((e) => e.id !== id))
-    setStats((s) => ({ ...s, events: s.events - 1 }))
+    try {
+      await eventsApi.delete(id)
+      toast({ message: "Evento eliminado correctamente" })
+      onDeleteEvent(id)
+      setEvents((prev) => prev.filter((e) => e.id !== id))
+      setStats((s) => ({ ...s, events: s.events - 1 }))
+    } catch (err) {
+      toast({
+        message:
+          err instanceof Error
+            ? err.message
+            : "No tienes permisos para eliminar eventos",
+        variant: "destructive",
+      })
+    }
   }
 
   if (loading) {
@@ -73,7 +103,7 @@ export function Dashboard({ onNewEvent, onEditEvent, onDeleteEvent }: DashboardP
     return (
       <Card className="border-dashed p-10 text-center shadow-sm">
         <p className="text-red-600">{error}</p>
-        <Button onClick={loadData} className="mt-4" variant="outline">
+        <Button onClick={retry} className="mt-4" variant="outline">
           Reintentar
         </Button>
       </Card>
@@ -85,11 +115,38 @@ export function Dashboard({ onNewEvent, onEditEvent, onDeleteEvent }: DashboardP
       <Sidebar
         collapsed={collapsed}
         active={activeSection}
+        esAdmin={esAdmin}
         onToggleCollapse={() => setCollapsed((c) => !c)}
         onSelect={setActiveSection}
       />
 
       <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        {/* Navegación de secciones para móvil (la sidebar está oculta) */}
+        <div className="mb-5 flex gap-2 overflow-x-auto pb-1 md:hidden" role="tablist" aria-label="Secciones">
+          {sidebarItems
+            .filter((item) => !item.soloAdmin || esAdmin)
+            .map(({ id, label }) => (
+              <button
+                key={id}
+                role="tab"
+                aria-selected={activeSection === id}
+                onClick={() => setActiveSection(id)}
+                className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                  activeSection === id
+                    ? "bg-violet-600 text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+        </div>
+
+        {activeSection !== "inicio" ? (
+          <div className="mx-auto max-w-3xl">
+            <AdminSections section={activeSection} esAdmin={esAdmin} />
+          </div>
+        ) : (
         <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
           <div className="min-w-0 space-y-8">
             <HeroCard />
@@ -101,7 +158,7 @@ export function Dashboard({ onNewEvent, onEditEvent, onDeleteEvent }: DashboardP
                   Próximos eventos
                 </h2>
                 <button
-                  onClick={() => setActiveSection("eventos")}
+                  onClick={() => setActiveSection("actividades")}
                   className="text-sm font-medium text-primary underline-offset-4 transition-colors hover:text-violet-800 hover:underline"
                 >
                   Ver todos
@@ -141,7 +198,7 @@ export function Dashboard({ onNewEvent, onEditEvent, onDeleteEvent }: DashboardP
               )}
             </section>
 
-            <QuickActions onNewEvent={onNewEvent} />
+            <QuickActions onNewEvent={onNewEvent} onNavigate={setActiveSection} />
           </div>
 
           <aside className="flex min-w-0 flex-col gap-6">
@@ -150,6 +207,7 @@ export function Dashboard({ onNewEvent, onEditEvent, onDeleteEvent }: DashboardP
             <HelpWidget />
           </aside>
         </div>
+        )}
       </main>
     </div>
   )

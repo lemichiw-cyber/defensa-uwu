@@ -57,3 +57,6 @@ dist/
 
 # environment env files
 .env*
+
+# Base de datos local
+server/data.sqlite

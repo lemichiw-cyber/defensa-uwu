@@ -1,5 +1,6 @@
 import crypto from "node:crypto"
 import { SignJWT, jwtVerify } from "jose"
+import { db } from "./db.js"
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET ?? "mievento-dev-secret-cambia-en-produccion"
@@ -57,6 +58,18 @@ export async function requireAuth(req, res, next) {
     return res.status(401).json({ error: "Token inválido o expirado." })
   }
   req.userId = Number(payload.sub)
+  next()
+}
+
+/* Doble capa: verificación de rol admin en el servidor */
+export function requireAdmin(req, res, next) {
+  const row = db.prepare("SELECT role FROM users WHERE id = ?").get(req.userId)
+  if (!row || row.role !== "admin") {
+    return res
+      .status(403)
+      .json({ error: "Acceso denegado: se requiere rol de administrador." })
+  }
+  req.userRole = "admin"
   next()
 }
 

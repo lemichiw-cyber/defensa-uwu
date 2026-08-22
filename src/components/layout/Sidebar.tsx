@@ -1,13 +1,11 @@
-import {
-  ChevronsLeft,
-  ChevronsRight,
-} from "lucide-react"
+import { ChevronsLeft, ChevronsRight, Lock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { sidebarItems } from "@/data/sidebar"
 
 interface SidebarProps {
   collapsed: boolean
   active: string
+  esAdmin: boolean
   onToggleCollapse: () => void
   onSelect: (id: string) => void
 }
@@ -16,9 +14,13 @@ interface SidebarProps {
 export function Sidebar({
   collapsed,
   active,
+  esAdmin,
   onToggleCollapse,
   onSelect,
 }: SidebarProps) {
+  /* Doble capa: los apartados admin no se muestran a usuarios comunes */
+  const visibles = sidebarItems.filter((item) => !item.soloAdmin || esAdmin)
+
   return (
     <aside
       className={cn(
@@ -27,7 +29,7 @@ export function Sidebar({
       )}
     >
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
-        {sidebarItems.map(({ id, label, icon: Icon }) => {
+        {visibles.map(({ id, label, icon: Icon, soloAdmin }) => {
           const isActive = active === id
           return (
             <button
@@ -51,6 +53,9 @@ export function Sidebar({
                 )}
               />
               {!collapsed && <span className="truncate">{label}</span>}
+              {!collapsed && soloAdmin && (
+                <Lock className="ml-auto size-3.5 text-violet-400" />
+              )}
             </button>
           )
         })}
