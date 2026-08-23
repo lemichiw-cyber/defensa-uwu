@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.mievento.plataforma",
+    "sha256_cert_fingerprints": [
+      "F9:BC:7D:CA:CE:DE:EF:8F:DE:6D:99:72:BA:2D:B8:BA:F9:59:6E:2F:8C:14:8A:CF:D8:AB:10:FA:70:72:D0:14"
+    ]
+  }
+}]
