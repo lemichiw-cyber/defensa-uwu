@@ -2,7 +2,12 @@ import { useEffect, useRef, useState } from "react"
 import { Palette, Check } from "lucide-react"
 import { THEMES, useTheme } from "@/components/ui/theme/ThemeContext"
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+  /** "onDark": para fondos oscuros (header transparente sobre el hero) */
+  variant?: "solid" | "onDark"
+}
+
+export function ThemeToggle({ variant = "solid" }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -19,11 +24,15 @@ export function ThemeToggle() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="rounded-full bg-gray-100 p-2 transition-colors hover:bg-gray-200"
+        className={`rounded-full p-2 transition-colors ${
+          variant === "onDark"
+            ? "bg-white/15 text-white hover:bg-white/25"
+            : "bg-gray-100 hover:bg-gray-200"
+        }`}
         aria-label="Cambiar tema"
         title="Cambiar tema"
       >
-        <Palette className="size-5 text-violet-600" />
+        <Palette className={`size-5 ${variant === "onDark" ? "" : "text-violet-600"}`} />
       </button>
 
       {open && (
@@ -50,7 +59,7 @@ export function ThemeToggle() {
                 <span className="theme-name flex items-center justify-center gap-1">
                   {t.nombre}
                   {theme === t.id && (
-                    <Check className="size-3 text-violet-600" strokeWidth={3} />
+                    <Check className="size-3 text-blue-600" strokeWidth={3} />
                   )}
                 </span>
               </button>
