@@ -99,7 +99,7 @@ export function Navbar({ view, onNavigate, onNewEvent }: NavbarProps) {
           )}
           <ThemeToggle variant={onLanding ? "onDark" : "solid"} />
           <Button onClick={onNewEvent} className="shadow-sm shadow-violet-600/25">
-            <Plus /> Nuevo evento
+            <Plus /> <span className="btn-label">Nuevo evento</span>
           </Button>
 
           {user ? (

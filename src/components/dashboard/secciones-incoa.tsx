@@ -153,7 +153,8 @@ export function ExamenesSection() {
       <TituloSeccion titulo="Gestión de Exámenes" sub="Consulta tus próximas evaluaciones y su estado." />
       <Card className="p-5 shadow-sm">
         <h3 className="font-semibold text-gray-900">Próximos Exámenes</h3>
-        <table className="mt-3 w-full border-collapse text-left text-sm">
+        <div className="mt-3 overflow-x-auto">
+        <table className="w-full min-w-[420px] border-collapse text-left text-sm">
           <thead>
             <tr className="border-b border-gray-200">
               {["Materia", "Fecha", "Hora", "Estado"].map((h) => (
@@ -178,6 +179,7 @@ export function ExamenesSection() {
             ))}
           </tbody>
         </table>
+        </div>
       </Card>
     </section>
   )
