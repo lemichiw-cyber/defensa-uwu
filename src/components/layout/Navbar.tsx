@@ -1,4 +1,5 @@
-import { LogOut, Plus, ShieldCheck, UserRound } from "lucide-react"
+import { LogOut, Menu, Plus, ShieldCheck, UserRound, X } from "lucide-react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -28,6 +29,7 @@ const iniciales = (nombre: string) =>
 
 export function Navbar({ view, onNavigate, onNewEvent }: NavbarProps) {
   const { user, esAdmin, logout } = useAuth()
+  const [menuAbierto, setMenuAbierto] = useState(false)
   /* Header transparente sobre el hero de la landing (estilo NewIndex.HTML) */
   const onLanding = view === "landing"
 
@@ -66,7 +68,17 @@ export function Navbar({ view, onNavigate, onNewEvent }: NavbarProps) {
         </button>
 
         {/* Navegación */}
-        <nav className="hidden items-center gap-1 md:flex">
+        {onLanding && (
+          <button
+            onClick={() => setMenuAbierto((v) => !v)}
+            className="rounded-full p-2 text-white transition-colors hover:bg-white/15 md:hidden"
+            aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={menuAbierto}
+          >
+            {menuAbierto ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
+        )}
+        <nav className={cn("items-center gap-1 md:flex", onLanding ? "hidden" : "hidden md:flex")}>
           {["Inicio", "Eventos", "Calendario", "Invitados", "Reportes"].map((link) => (
             <button
               key={link}
@@ -150,6 +162,27 @@ export function Navbar({ view, onNavigate, onNewEvent }: NavbarProps) {
           )}
         </div>
       </div>
+
+      {/* Menú móvil de la landing */}
+      {onLanding && menuAbierto && (
+        <nav className="border-t border-white/15 bg-slate-900/95 px-4 pb-4 pt-2 backdrop-blur md:hidden">
+          {[
+            ["Inicio", "#top"],
+            ["Servicios", "#services"],
+            ["Portfolio", "#portfolio"],
+            ["Contacto", "#contact"],
+          ].map(([label, href]) => (
+            <a
+              key={href}
+              href={href}
+              onClick={() => setMenuAbierto(false)}
+              className="block rounded-lg px-3 py-3 text-sm font-medium uppercase tracking-wider text-white transition-colors hover:bg-white/10 hover:text-yellow-400"
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
+      )}
     </header>
   )
 }

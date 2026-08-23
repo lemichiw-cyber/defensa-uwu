@@ -151,7 +151,7 @@ export function Dashboard({ initialSection, onNewEvent, onEditEvent, onDeleteEve
         ) : (
         <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
           <div className="min-w-0 space-y-8">
-            <HeroCard />
+            <HeroCard onNewEvent={onNewEvent} />
             <StatsRow stats={stats} />
 
             <section aria-labelledby="proximos-eventos">

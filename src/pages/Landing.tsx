@@ -1,4 +1,5 @@
 import { GraduationCap, Palette, Settings2 } from "lucide-react"
+import { useReveal } from "@/hooks/useReveal"
 
 /* Tarjetas del portafolio — cada una entra a la plataforma en su sección
    pasando por el Splash (flujo NewIndex → redrect → PaginaWeb) */
@@ -74,8 +75,10 @@ interface LandingProps {
 }
 
 export function Landing({ onEnterSection }: LandingProps) {
+  useReveal()
+
   return (
-    <div className="bg-white">
+    <div className="bg-white" id="top">
       {/* ===== HERO (fiel a NewIndex.HTML) ===== */}
       <section className="relative flex min-h-[92vh] flex-col items-center justify-center text-center text-white">
         <img
@@ -115,7 +118,7 @@ export function Landing({ onEnterSection }: LandingProps) {
       </section>
 
       {/* ===== SERVICIOS ===== */}
-      <section className="bg-white px-6 py-24 md:px-[10%]">
+      <section id="services" className="bg-white px-6 py-24 md:px-[10%]">
         <h2 className="text-center text-3xl font-bold uppercase tracking-widest text-gray-900">
           Services
         </h2>
@@ -125,7 +128,7 @@ export function Landing({ onEnterSection }: LandingProps) {
 
         <div className="mt-14 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
           {SERVICES.map(({ icon: Icon, titulo, texto }) => (
-            <article key={titulo} className="px-5 py-7 text-center transition-transform duration-300 hover:-translate-y-2.5">
+            <article key={titulo} className="reveal px-5 py-7 text-center transition-transform duration-300 hover:-translate-y-2.5">
               <span
                 className="mx-auto mb-6 flex size-20 items-center justify-center rounded-full text-white shadow-lg"
                 style={{ background: "#f1c40f", boxShadow: "0 5px 20px rgba(241,196,15,.35)" }}
@@ -143,7 +146,7 @@ export function Landing({ onEnterSection }: LandingProps) {
       <section style={{ background: "linear-gradient(135deg,#2563eb,#1e3a5f)" }}>
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-10 px-6 py-16 text-center text-white lg:grid-cols-4">
           {STATS.map((s) => (
-            <div key={s.label}>
+            <div key={s.label} className="reveal">
               <h3 className="text-4xl font-extrabold">{s.valor}</h3>
               <p className="mt-1 text-sm uppercase tracking-wider opacity-85">{s.label}</p>
             </div>
@@ -165,7 +168,7 @@ export function Landing({ onEnterSection }: LandingProps) {
             <button
               key={item.id}
               onClick={() => onEnterSection(item.id)}
-              className="group relative aspect-[4/3] overflow-hidden rounded-lg shadow-md transition-shadow hover:shadow-xl"
+              className="reveal group relative aspect-[4/3] overflow-hidden rounded-lg shadow-md transition-shadow hover:shadow-xl"
               aria-label={`Acceder a ${item.titulo}`}
             >
               <img
@@ -191,7 +194,7 @@ export function Landing({ onEnterSection }: LandingProps) {
       </section>
 
       {/* ===== CTA FINAL ===== */}
-      <section className="px-6 py-24 text-center" style={{ background: "#0f172a" }}>
+      <section id="contact" className="px-6 py-24 text-center" style={{ background: "#0f172a" }}>
         <h2 className="text-3xl font-bold text-white sm:text-4xl">¿Listo para comenzar?</h2>
         <p className="mx-auto mt-4 max-w-xl text-gray-300">
           Accede ahora a la plataforma educativa y descubre todas las

@@ -433,3 +433,11 @@ body {
 @media (max-width: 400px) {
   .btn-label { display: none; }
 }
+
+/* Animación fade-up al hacer scroll (estilo NewIndex.HTML) */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity .6s ease, transform .6s ease; }
+.reveal-visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+/* Feedback táctil en botones (app móvil) */
+button:active:not(:disabled) { transform: scale(.97); }

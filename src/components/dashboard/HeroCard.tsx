@@ -1,3 +1,10 @@
+import { CalendarPlus } from "lucide-react"
+import { useAuth } from "@/context/AuthContext"
+
+interface HeroCardProps {
+  onNewEvent?: () => void
+}
+
 /** Ilustración flat: persona con laptop */
 function HeroIllustration() {
   return (
@@ -55,18 +62,29 @@ function HeroIllustration() {
   )
 }
 
-export function HeroCard() {
+export function HeroCard({ onNewEvent }: HeroCardProps) {
+  const { user, esAdmin } = useAuth()
+  const primerNombre = user?.name.split(" ")[0] ?? "invitado"
+
   return (
-    <section className="relative overflow-hidden rounded-2xl border border-violet-100 bg-gradient-to-r from-violet-100 via-violet-50/80 to-white p-6 shadow-sm sm:p-8">
-      <div className="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-violet-200/50 blur-3xl" />
+    <section className="relative overflow-hidden rounded-2xl border border-blue-100 bg-gradient-to-r from-blue-50 via-sky-50/80 to-white p-6 shadow-sm sm:p-8">
+      <div className="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-blue-200/40 blur-3xl" />
       <div className="relative grid items-center gap-6 sm:grid-cols-[1fr_auto]">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-            ¡Hola, María! 👋
+          <p className="text-xs font-bold uppercase tracking-[3px] text-yellow-500">
+            {esAdmin ? "Panel de administración" : "Tu espacio"}
+          </p>
+          <h1 className="mt-2 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+            ¡Hola, {primerNombre}! 👋
           </h1>
           <p className="mt-2 max-w-md text-base text-gray-500">
             Aquí tienes un resumen de tus eventos.
           </p>
+          {onNewEvent && (
+            <button onClick={onNewEvent} className="incoa-cta mt-5 inline-flex items-center gap-2 px-6 py-2.5 text-xs">
+              <CalendarPlus className="size-4" /> Nuevo evento
+            </button>
+          )}
         </div>
         <div className="justify-self-center sm:justify-self-end">
           <HeroIllustration />
