@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer"
 import { Dashboard } from "@/pages/Dashboard"
 import { Landing } from "@/pages/Landing"
 import { NewEventDialog } from "@/components/NewEventDialog"
+import { Splash } from "@/components/Splash"
 import { LoginPage } from "@/pages/Login"
 import { AuthProvider, useAuth } from "@/context/AuthContext"
 import { eventsApi, type EventItem } from "@/lib/api"
@@ -20,6 +21,9 @@ function AppContent() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingEvent, setEditingEvent] = useState<EventItem | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  /* Flujo INCOA: landing → splash (redrect) → sección del dashboard */
+  const [splash, setSplash] = useState(false)
+  const [pendingSection, setPendingSection] = useState<string | null>(null)
 
   if (loading) {
     return (
@@ -47,6 +51,14 @@ function AppContent() {
   const openEditEvent = (event: LocalEventItem) => {
     setEditingEvent(event as EventItem)
     setDialogOpen(true)
+  }
+
+  /* Entra a la plataforma vía Splash en la sección elegida (flujo de los HTML) */
+  const entrarConSeccion = (sectionId: string) => {
+    setPendingSection(sectionId)
+    setView("dashboard")
+    setSplash(true)
+    window.scrollTo({ top: 0 })
   }
 
   const handleSave = async (data: {
@@ -91,16 +103,21 @@ function AppContent() {
       <div className="flex-1">
         {view === "dashboard" ? (
           <Dashboard
-            key={refreshKey}
+            key={`${refreshKey}:${pendingSection ?? "inicio"}`}
+            initialSection={pendingSection}
             onNewEvent={openNewEvent}
             onEditEvent={openEditEvent}
             onDeleteEvent={() => {}}
           />
         ) : (
-          <Landing onNewEvent={openNewEvent} onSeeEvents={() => setView("dashboard")} />
+          <Landing onEnterSection={entrarConSeccion} />
         )}
       </div>
       <Footer />
+      {/* Splash de carga (redrect.HTML) sobre el dashboard */}
+      {view === "dashboard" && splash && (
+        <Splash onDone={() => setSplash(false)} />
+      )}
       <NewEventDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}

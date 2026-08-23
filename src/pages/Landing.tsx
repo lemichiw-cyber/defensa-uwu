@@ -1,175 +1,237 @@
-import { CalendarDays, Clock, MapPin, Plus, Sparkles } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { popularEvents, type PopularEvent } from "@/data/events"
+import { GraduationCap, Palette, Settings2 } from "lucide-react"
 
-const categoryStyles: Record<PopularEvent["category"], string> = {
-  Música: "bg-violet-500",
-  Educativo: "bg-sky-500",
-  Celebración: "bg-pink-500",
-  Escolar: "bg-emerald-500",
-}
+/* Tarjetas del portafolio — cada una entra a la plataforma en su sección
+   pasando por el Splash (flujo NewIndex → redrect → PaginaWeb) */
+const PORTFOLIO = [
+  {
+    id: "actividades",
+    titulo: "Actividades",
+    sub: "Gestión",
+    img: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "examenes",
+    titulo: "Exámenes",
+    sub: "Evaluaciones",
+    img: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "foros",
+    titulo: "Foros",
+    sub: "Comunidad",
+    img: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "agenda",
+    titulo: "Agenda",
+    sub: "Organización",
+    img: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "clases",
+    titulo: "Clases Online",
+    sub: "Videoconferencias",
+    img: "https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "visor",
+    titulo: "Visor Imagen",
+    sub: "Visualización",
+    img: "https://images.unsplash.com/photo-1561070791-2526d30994b8?auto=format&fit=crop&w=800&q=80",
+  },
+]
+
+const SERVICES = [
+  {
+    icon: GraduationCap,
+    titulo: "Para estudiantes",
+    texto:
+      "Gestiona tus tareas, exámenes y calificaciones. Accede a recursos educativos y mantente al día con tu agenda académica.",
+  },
+  {
+    icon: Settings2,
+    titulo: "Servicios",
+    texto:
+      "Plataforma integral con foros de discusión, mensajería interna, clases en línea y actividades grupales colaborativas.",
+  },
+  {
+    icon: Palette,
+    titulo: "Diseño",
+    texto:
+      "Interfaz moderna y responsiva diseñada para ofrecer la mejor experiencia de usuario en cualquier dispositivo.",
+  },
+]
+
+const STATS = [
+  { valor: "15+", label: "Módulos Activos" },
+  { valor: "100%", label: "Funcional" },
+  { valor: "24/7", label: "Disponibilidad" },
+  { valor: "∞", label: "Posibilidades" },
+]
 
 interface LandingProps {
-  onNewEvent: () => void
-  onSeeEvents: () => void
+  onEnterSection: (sectionId: string) => void
 }
 
-export function Landing({ onNewEvent, onSeeEvents }: LandingProps) {
+export function Landing({ onEnterSection }: LandingProps) {
   return (
-    <>
-      {/* HERO con video de fondo (estilo EduGest) */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-violet-50 via-white to-white">
-        <video
-          className="absolute inset-0 size-full object-cover opacity-25"
-          src="/videos/paradise-sunset.720p.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
+    <div className="bg-white">
+      {/* ===== HERO (fiel a NewIndex.HTML) ===== */}
+      <section className="relative flex min-h-[92vh] flex-col items-center justify-center text-center text-white">
+        <img
+          src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1950&q=80"
+          alt=""
           aria-hidden
+          className="absolute inset-0 size-full object-cover"
         />
-        <div className="pointer-events-none absolute -left-32 top-10 size-96 rounded-full bg-violet-200/40 blur-3xl" />
-        <div className="pointer-events-none absolute -right-24 bottom-0 size-80 rounded-full bg-violet-100/60 blur-3xl" />
+        <div className="absolute inset-0" style={{ background: "rgba(15,23,42,.6)" }} />
 
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-24">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 py-1.5 text-sm font-medium text-violet-700 shadow-sm">
-              <Sparkles className="size-4" /> La forma más simple de organizar eventos
-            </span>
-            <h1 className="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-gray-900 sm:text-5xl">
-              Organiza tus{" "}
-              <span className="text-primary">mejores momentos</span> sin esfuerzo
-            </h1>
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-gray-500">
-              Crea eventos, invita a tus amigos y mantén todo bajo control con
-              calendarios, recordatorios y reportes en un solo lugar.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button size="lg" onClick={onNewEvent} className="shadow-lg shadow-violet-600/25">
-                <Plus /> Crear evento
-              </Button>
-              <Button size="lg" variant="outline" className="bg-white" onClick={onSeeEvents}>
-                Ver eventos
-              </Button>
-            </div>
-            <div className="mt-8 flex items-center gap-4">
-              <div className="flex -space-x-2.5">
-                {[12, 32, 45, 60].map((n) => (
-                  <img
-                    key={n}
-                    src={`https://i.pravatar.cc/64?img=${n}`}
-                    alt=""
-                    loading="lazy"
-                    className="size-9 rounded-full border-2 border-white object-cover shadow-sm"
-                  />
-                ))}
-              </div>
-              <p className="text-sm text-gray-500">
-                <span className="font-semibold text-gray-900">+2.000 organizadores</span>{" "}
-                ya confían en MiEvento
-              </p>
-            </div>
-          </div>
-
-          {/* Imagen con máscara orgánica + tarjetas flotantes */}
-          <div className="relative mx-auto w-full max-w-md lg:max-w-none">
-            <div className="absolute inset-8 rounded-full bg-violet-300/30 blur-2xl" aria-hidden />
-            <img
-              src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=900&auto=format&fit=crop"
-              alt="Personas celebrando un evento"
-              className="relative aspect-square w-full object-cover shadow-xl [border-radius:58%_42%_45%_55%/52%_48%_52%_48%]"
-            />
-            <Card className="absolute -left-4 top-10 flex items-center gap-3 p-3.5 pr-5 shadow-lg sm:-left-10">
-              <span className="flex size-11 items-center justify-center rounded-xl bg-violet-100">
-                <CalendarDays className="size-5 text-violet-600" />
-              </span>
-              <div>
-                <p className="text-sm font-semibold text-gray-900">Evento creado</p>
-                <p className="text-xs text-gray-500">Concierto · 24 mayo</p>
-              </div>
-            </Card>
-            <Card className="absolute -bottom-6 right-2 flex items-center gap-3 p-3.5 pr-5 shadow-lg sm:-right-6">
-              <span className="flex size-11 items-center justify-center rounded-xl bg-amber-100">
-                <Clock className="size-5 text-amber-600" />
-              </span>
-              <div>
-                <p className="text-sm font-semibold text-gray-900">Recordatorio activo</p>
-                <p className="text-xs text-gray-500">1 hora antes</p>
-              </div>
-            </Card>
+        <div className="relative z-10 max-w-3xl px-5">
+          <p className="mb-4 text-sm font-normal uppercase tracking-[3px] text-yellow-400">
+            Welcome To Eduset
+          </p>
+          <h1 className="text-5xl font-bold leading-tight sm:text-6xl">
+            ¡Que onda peblada!
+          </h1>
+          <p className="mx-auto mt-5 max-w-xl text-lg opacity-90">
+            Plataforma educativa institucional para gestionar actividades
+            académicas, exámenes, foros y más. Todo en un solo lugar.
+          </p>
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
+            <button
+              onClick={() => onEnterSection("inicio")}
+              className="rounded-[30px] bg-yellow-400 px-9 py-3.5 text-sm font-bold uppercase tracking-wide text-white shadow-lg transition-all hover:-translate-y-0.5 hover:bg-yellow-500"
+            >
+              Comenzar Ahora
+            </button>
+            <a
+              href="#portfolio"
+              className="rounded-[30px] border-2 border-white px-8 py-3 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-white hover:text-slate-900"
+            >
+              Ver Portafolio
+            </a>
           </div>
         </div>
       </section>
 
-      {/* EVENTOS POPULARES */}
-      <section aria-labelledby="eventos-populares" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 id="eventos-populares" className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-              Eventos populares
-            </h2>
-            <p className="mt-2 text-gray-500">
-              Lo que la comunidad está organizando esta semana.
-            </p>
-          </div>
-          <button
-            onClick={onSeeEvents}
-            className="text-sm font-medium text-primary underline-offset-4 transition-colors hover:text-violet-800 hover:underline"
-          >
-            Ver todos los eventos →
-          </button>
-        </div>
+      {/* ===== SERVICIOS ===== */}
+      <section className="bg-white px-6 py-24 md:px-[10%]">
+        <h2 className="text-center text-3xl font-bold uppercase tracking-widest text-gray-900">
+          Services
+        </h2>
+        <p className="mt-3 text-center text-lg text-gray-500">
+          Todo lo que necesitas para tu vida académica
+        </p>
 
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {popularEvents.map((ev) => (
-            <Card
-              key={ev.id}
-              className="group overflow-hidden p-0 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-            >
-              <div className="relative h-44 overflow-hidden">
-                <img
-                  src={ev.image}
-                  alt={ev.title}
-                  loading="lazy"
-                  className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                {/* Fecha destacada */}
-                <div className="absolute left-3 top-3 rounded-xl bg-white px-3 py-1.5 text-center shadow-md">
-                  <p className="text-xl font-extrabold leading-none text-gray-900">{ev.day}</p>
-                  <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-wide text-violet-600">
-                    {ev.month}
-                  </p>
-                </div>
-                {/* Categoría */}
-                <Badge
-                  className="absolute bottom-3 left-3 gap-1.5 rounded-full border-transparent bg-white/95 text-gray-700 shadow-sm backdrop-blur hover:bg-white"
-                >
-                  <span className={`size-2 rounded-full ${categoryStyles[ev.category]}`} />
-                  {ev.category}
-                </Badge>
-              </div>
-              <div className="p-4">
-                <h3 className="line-clamp-2 min-h-[2.75rem] font-semibold text-gray-900 transition-colors group-hover:text-primary">
-                  {ev.title}
-                </h3>
-                <ul className="mt-3 space-y-1.5 text-sm text-gray-500">
-                  <li className="flex items-center gap-2">
-                    <CalendarDays className="size-4 shrink-0 text-gray-400" /> {ev.date}
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Clock className="size-4 shrink-0 text-gray-400" /> {ev.time}
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <MapPin className="size-4 shrink-0 text-gray-400" /> {ev.location}
-                  </li>
-                </ul>
-              </div>
-            </Card>
+        <div className="mt-14 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
+          {SERVICES.map(({ icon: Icon, titulo, texto }) => (
+            <article key={titulo} className="px-5 py-7 text-center transition-transform duration-300 hover:-translate-y-2.5">
+              <span
+                className="mx-auto mb-6 flex size-20 items-center justify-center rounded-full text-white shadow-lg"
+                style={{ background: "#f1c40f", boxShadow: "0 5px 20px rgba(241,196,15,.35)" }}
+              >
+                <Icon className="size-9" />
+              </span>
+              <h3 className="mb-4 text-xl font-bold text-slate-900">{titulo}</h3>
+              <p className="leading-relaxed text-gray-500">{texto}</p>
+            </article>
           ))}
         </div>
       </section>
-    </>
+
+      {/* ===== STATS (barra azul INCOA) ===== */}
+      <section style={{ background: "linear-gradient(135deg,#2563eb,#1e3a5f)" }}>
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-10 px-6 py-16 text-center text-white lg:grid-cols-4">
+          {STATS.map((s) => (
+            <div key={s.label}>
+              <h3 className="text-4xl font-extrabold">{s.valor}</h3>
+              <p className="mt-1 text-sm uppercase tracking-wider opacity-85">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ===== PORTAFOLIO — cada tarjeta entra a su sección vía Splash ===== */}
+      <section id="portfolio" className="bg-gray-50 px-6 py-24 md:px-[10%]">
+        <h2 className="text-center text-3xl font-bold uppercase tracking-widest text-gray-900">
+          Portfolio
+        </h2>
+        <p className="mt-3 text-center text-lg text-gray-500">
+          Explora los módulos de la plataforma
+        </p>
+
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {PORTFOLIO.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => onEnterSection(item.id)}
+              className="group relative aspect-[4/3] overflow-hidden rounded-lg shadow-md transition-shadow hover:shadow-xl"
+              aria-label={`Acceder a ${item.titulo}`}
+            >
+              <img
+                src={item.img}
+                alt={item.titulo}
+                loading="lazy"
+                className="size-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              {/* Overlay azul al hover (como el original) */}
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{ background: "rgba(37,99,235,.9)" }}
+              >
+                <h3 className="text-2xl font-bold">{item.titulo}</h3>
+                <span className="text-sm opacity-85">{item.sub}</span>
+                <span className="mt-3 rounded-full bg-white px-5 py-1.5 text-xs font-bold uppercase tracking-wide text-blue-600">
+                  Acceder
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* ===== CTA FINAL ===== */}
+      <section className="px-6 py-24 text-center" style={{ background: "#0f172a" }}>
+        <h2 className="text-3xl font-bold text-white sm:text-4xl">¿Listo para comenzar?</h2>
+        <p className="mx-auto mt-4 max-w-xl text-gray-300">
+          Accede ahora a la plataforma educativa y descubre todas las
+          funcionalidades disponibles para ti.
+        </p>
+        <button
+          onClick={() => onEnterSection("inicio")}
+          className="mt-8 inline-block rounded-[30px] bg-yellow-400 px-10 py-4 text-sm font-bold uppercase tracking-wide text-white shadow-lg transition-all hover:-translate-y-0.5 hover:bg-yellow-500"
+        >
+          Ir a la Plataforma
+        </button>
+      </section>
+
+      {/* ===== FOOTER INCOA ===== */}
+      <footer className="bg-slate-950 pb-8 pt-14 text-gray-400">
+        <div className="mx-auto grid max-w-6xl gap-10 px-6 md:grid-cols-3">
+          <div>
+            <h4 className="mb-3 font-bold text-white">Plataforma Educativa</h4>
+            <p className="text-sm leading-relaxed">
+              Plataforma educativa institucional diseñada para mejorar la
+              experiencia de aprendizaje de estudiantes y docentes.
+            </p>
+          </div>
+          <div className="text-sm">
+            <h4 className="mb-3 font-bold text-white">Acceso</h4>
+            <button onClick={() => onEnterSection("inicio")} className="transition-colors hover:text-yellow-400">
+              Acceder al Sistema →
+            </button>
+          </div>
+          <div className="text-sm">
+            <h4 className="mb-3 font-bold text-white">Contacto</h4>
+            <p>📧 contacto@plataforma.edu</p>
+            <p>📞 +500 6767 8989</p>
+            <p>📍 Instituto Nacional, Ciudad Obrera de Apopa</p>
+          </div>
+        </div>
+        <p className="mt-12 border-t border-white/10 pt-6 text-center text-xs opacity-70">
+          © 2026 Plataforma Educativa. Todos los derechos reservados.
+        </p>
+      </footer>
+    </div>
   )
 }

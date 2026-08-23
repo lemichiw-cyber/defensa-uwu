@@ -17,16 +17,18 @@ import { eventsApi, type EventItem, type Stats } from "@/lib/api"
 import { type EventItem as LocalEventItem } from "@/data/events"
 
 interface DashboardProps {
+  /** Sección inicial (flujo INCOA: tarjeta del portafolio → splash → sección) */
+  initialSection?: string | null
   onNewEvent: () => void
   onEditEvent: (event: LocalEventItem) => void
   onDeleteEvent: (id: number) => void
 }
 
-export function Dashboard({ onNewEvent, onEditEvent, onDeleteEvent }: DashboardProps) {
+export function Dashboard({ initialSection, onNewEvent, onEditEvent, onDeleteEvent }: DashboardProps) {
   const { esAdmin } = useAuth()
   const { toast } = useToast()
   const [collapsed, setCollapsed] = useState(false)
-  const [activeSection, setActiveSection] = useState(sidebarItems[0].id)
+  const [activeSection, setActiveSection] = useState(initialSection ?? sidebarItems[0].id)
 
   const [events, setEvents] = useState<EventItem[]>([])
   const [stats, setStats] = useState<Stats>({ events: 0, guests: 0, reminders: 0 })

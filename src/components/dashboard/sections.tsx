@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react"
 import {
   Building2,
-  CalendarCheck,
-  Calendar,
-  ClipboardList,
-  FileText,
-  Mail,
-  MessageCircle,
   ShieldCheck,
   UserPlus,
-  Video,
   ClipboardCheck,
   Bell,
 } from "lucide-react"
@@ -19,6 +12,14 @@ import { Card } from "@/components/ui/card"
 import { adminApi, type AdminUser } from "@/lib/api"
 import { useToast } from "@/components/ui/toast/ToastContext"
 import { THEMES, useTheme, type Theme } from "@/components/ui/theme/ThemeContext"
+import {
+  ActividadesSection,
+  AgendaSection,
+  ClasesSection,
+  ExamenesSection,
+  ForoSection,
+  VisorSection,
+} from "@/components/dashboard/secciones-incoa"
 
 /* ---------- Apartado genérico estilo EduGest ---------- */
 function SectionPlaceholder({
@@ -211,20 +212,20 @@ export function AdminSections({ section, esAdmin }: SectionsProps) {
   if (item && !esAdmin) return <AccesoDenegado />
 
   switch (section) {
+    /* ——— Secciones reales portadas de PaginaWeb.HTML (INCOA) ——— */
     case "actividades":
-      return <SectionPlaceholder icon={ClipboardList} titulo="Actividades" descripcion="Tareas y pendientes organizados en un solo lugar." />
+      return <ActividadesSection />
     case "examenes":
-      return <SectionPlaceholder icon={FileText} titulo="Exámenes" descripcion="Creador y simulador de exámenes." />
+      return <ExamenesSection />
     case "foros":
-      return <SectionPlaceholder icon={MessageCircle} titulo="Foros" descripcion="Discusión académica por tema." />
+      return <ForoSection />
     case "agenda":
-      return <SectionPlaceholder icon={CalendarCheck} titulo="Agenda" descripcion="Tu plan diario con actividades y pendientes." />
-    case "calendario":
-      return <SectionPlaceholder icon={Calendar} titulo="Calendario" descripcion="Eventos y fechas importantes." />
+      return <AgendaSection />
     case "clases":
-      return <SectionPlaceholder icon={Video} titulo="Clases en línea" descripcion="Enlaces y reuniones con un solo clic." />
-    case "mensajes":
-      return <SectionPlaceholder icon={Mail} titulo="Mensajes" descripcion="Bandeja de entrada de mensajes." />
+      return <ClasesSection />
+    case "visor":
+      return <VisorSection />
+    /* ——— Secciones administrativas y auxiliares ——— */
     case "tareas":
       return <SectionPlaceholder icon={ClipboardCheck} titulo="Tareas" descripcion="Gestión de actividades asignadas." />
     case "recordatorios":

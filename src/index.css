@@ -394,3 +394,8 @@ body { background: var(--bg); color: var(--text); transition: background .3s, co
   from { opacity: 0; transform: translateX(1rem) scale(.97); }
   to   { opacity: 1; transform: translateX(0) scale(1); }
 }
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
