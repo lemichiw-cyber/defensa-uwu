@@ -5,7 +5,9 @@ import { fileURLToPath } from "node:url"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-export const db = new DatabaseSync(path.resolve(__dirname, "data.sqlite"))
+/* Ruta de la BD configurable (Docker: /data/data.sqlite en volumen persistente) */
+const DB_PATH = process.env.DB_PATH ?? path.resolve(__dirname, "data.sqlite")
+export const db = new DatabaseSync(DB_PATH)
 
 db.exec("PRAGMA foreign_keys = ON;")
 

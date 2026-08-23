@@ -1,0 +1,10 @@
+node_modules
+dist
+.git
+.github
+*.log
+server/data.sqlite
+server/*.sqlite
+.env*
+!.env.example
+Descargas
