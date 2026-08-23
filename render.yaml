@@ -1,0 +1,14 @@
+services:
+  # Backend API (Express + SQLite)
+  - type: web
+    name: mievento-api
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true   # secreto autogenerado y guardado seguro

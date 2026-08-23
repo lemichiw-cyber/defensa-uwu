@@ -60,3 +60,4 @@ dist/
 
 # Base de datos local
 server/data.sqlite
+.vercel
