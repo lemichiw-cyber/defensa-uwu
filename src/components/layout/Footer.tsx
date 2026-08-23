@@ -50,7 +50,7 @@ export function Footer() {
           {/* Marca + newsletter */}
           <div className="space-y-5">
             <div className="flex items-center gap-2.5">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-white text-[#6D28D9]">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-white text-[#2563eb]">
                 <CalendarDays className="size-5" />
               </span>
               <span className="text-lg font-bold tracking-tight">MiEvento</span>
@@ -73,7 +73,7 @@ export function Footer() {
               <Button
                 type="submit"
                 variant="secondary"
-                className="shrink-0 bg-white text-[#6D28D9] hover:bg-violet-100"
+                className="shrink-0 bg-white text-[#2563eb] hover:bg-violet-100"
               >
                 <Send /> Suscribirme
               </Button>
@@ -85,7 +85,7 @@ export function Footer() {
                   href="#"
                   aria-label={label}
                   onClick={(e) => e.preventDefault()}
-                  className="flex size-9 items-center justify-center rounded-full bg-white/10 text-violet-100 transition-colors hover:bg-white hover:text-[#6D28D9]"
+                  className="flex size-9 items-center justify-center rounded-full bg-white/10 text-violet-100 transition-colors hover:bg-white hover:text-[#2563eb]"
                 >
                   <BrandIcon d={path} />
                 </a>

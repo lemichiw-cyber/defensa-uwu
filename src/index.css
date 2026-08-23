@@ -4,8 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    Roboto, sans-serif;
+  --font-sans: "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui,
+    "Segoe UI", Roboto, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -82,18 +82,18 @@
   --card-foreground: #111827;
   --popover: #ffffff;
   --popover-foreground: #111827;
-  --primary: #6d28d9;
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
   --secondary: #f3f4f6;
   --secondary-foreground: #111827;
   --muted: #f3f4f6;
   --muted-foreground: #6b7280;
-  --accent: #ede9fe;
-  --accent-foreground: #5b21b6;
+  --accent: #dbebff;
+  --accent-foreground: #1e40af;
   --destructive: #dc2626;
   --border: #e5e7eb;
   --input: #e5e7eb;
-  --ring: #8b5cf6;
+  --ring: #3b82f6;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -272,8 +272,9 @@ tfoot td { background: var(--gray-50); font-weight: 600; border-top: 2px solid v
    Variables por tema + remapeo de utilidades Tailwind → variables
    =================================================================== */
 :root {
-  --t-primary: #6d28d9; --t-primary-dark: #5b21b6; --t-primary-light: #ede9fe;
-  --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+  --t-primary: #2563eb; --t-primary-dark: #1d4ed8; --t-primary-light: #dbebff;
+  --yellow: #f1c40f; --yellow-dark: #d4ac0d;
+  --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e5e7eb;
   --gray-300: #d1d5db; --gray-400: #9ca3af; --gray-500: #6b7280; --gray-600: #4b5563; --gray-700: #374151; --gray-800: #1f2937; --gray-900: #111827;
   --bg: #f9fafb; --bg-card: #ffffff; --bg-header: rgba(255,255,255,.85);
   --text: #111827; --border: #e5e7eb;
@@ -399,3 +400,26 @@ body { background: var(--bg); color: var(--text); transition: background .3s, co
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* ---- Estética INCOA: remapeos restantes violeta → azul/amarillo ---- */
+.bg-violet-500 { background-color: var(--t-primary) !important; }
+.bg-violet-600 { background-color: var(--t-primary) !important; }
+.hover\:bg-violet-600:hover { background-color: var(--t-primary-dark) !important; }
+.hover\:bg-violet-700:hover { background-color: var(--t-primary-dark) !important; }
+.bg-violet-200 { background-color: var(--t-primary-light) !important; }
+.shadow-violet-600\/25 { --tw-shadow-color: rgba(37,99,235,.25) !important; }
+.text-violet-100, .text-violet-200, .text-violet-300, .text-violet-400 { color: #93c5fd !important; }
+.border-violet-400 { border-color: var(--t-primary) !important; }
+
+/* Botones píldora estilo INCOA para elementos con acento amarillo */
+.incoa-cta {
+  background: var(--yellow);
+  color: #fff;
+  border-radius: 9999px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(241,196,15,.4);
+  transition: all .3s;
+}
+.incoa-cta:hover { background: var(--yellow-dark); transform: translateY(-2px); }
