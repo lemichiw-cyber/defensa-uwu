@@ -20,7 +20,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { MiniCalendar } from "@/components/dashboard/MiniCalendar"
 import { useAuth } from "@/context/AuthContext"
 
-/* ---------- persistencia local ---------- */
 export function useLocalState<T>(key: string, inicial: T) {
   const [valor, setValor] = useState<T>(() => {
     try {
@@ -51,9 +50,6 @@ const prioridadStyles: Record<string, string> = {
   Baja: "bg-emerald-100 text-emerald-700",
 }
 
-/* =====================================================================
-   ACTIVIDADES — Gestión con prioridades (portado de PaginaWeb.HTML)
-   ===================================================================== */
 type Prioridad = "Alta" | "Media" | "Baja"
 interface Actividad {
   id: number
@@ -138,9 +134,6 @@ export function ActividadesSection() {
   )
 }
 
-/* =====================================================================
-   EXÁMENES — Tabla de próximos exámenes (portado)
-   ===================================================================== */
 const EXAMENES = [
   { materia: "Matemáticas II", fecha: "24 Ago", hora: "10:00 AM", estado: "Pendiente", tono: "Alta" },
   { materia: "Literatura Universal", fecha: "26 Ago", hora: "02:00 PM", estado: "Preparando", tono: "Media" },
@@ -185,9 +178,6 @@ export function ExamenesSection() {
   )
 }
 
-/* =====================================================================
-   FORO ESTUDIANTIL — Publicar + upvotes (portado, persistente)
-   ===================================================================== */
 interface Post {
   id: number
   autor: string
@@ -277,9 +267,6 @@ export function ForoSection() {
   )
 }
 
-/* =====================================================================
-   AGENDA — reutiliza el MiniCalendar real
-   ===================================================================== */
 export function AgendaSection() {
   return (
     <section className="space-y-4" aria-label="Agenda académica">
@@ -291,9 +278,6 @@ export function AgendaSection() {
   )
 }
 
-/* =====================================================================
-   VIDEOLLAMADAS — sala en vivo + chat funcional (portado)
-   ===================================================================== */
 interface MensajeChat {
   id: number
   autor: string
@@ -400,9 +384,6 @@ export function ClasesSection() {
   )
 }
 
-/* =====================================================================
-   VISOR DE RECURSOS — URL/upload + zoom + rotar (portado)
-   ===================================================================== */
 export function VisorSection() {
   const [url, setUrl] = useState("")
   const [imgSrc, setImgSrc] = useState<string | null>(null)
@@ -453,7 +434,7 @@ export function VisorSection() {
           </label>
         </div>
 
-        {/* Escenario del visor */}
+        {}
         <div className="mt-4 flex min-h-[260px] items-center justify-center overflow-hidden rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
           {imgSrc ? (
             <img

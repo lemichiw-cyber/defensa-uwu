@@ -26,7 +26,6 @@ function publicUser(row) {
   return { id: row.id, name: row.name, email: row.email, role: row.role }
 }
 
-/* POST /api/auth/register */
 router.post("/register", async (req, res) => {
   const parsed = registerSchema.safeParse(req.body)
   if (!parsed.success) {
@@ -51,7 +50,6 @@ router.post("/register", async (req, res) => {
   res.status(201).json({ token, user: publicUser(user) })
 })
 
-/* POST /api/auth/login */
 router.post("/login", async (req, res) => {
   const parsed = loginSchema.safeParse(req.body)
   if (!parsed.success) {
@@ -73,7 +71,6 @@ router.post("/login", async (req, res) => {
   res.json({ token, user: publicUser(user) })
 })
 
-/* GET /api/auth/me */
 router.get("/me", requireAuth, (req, res) => {
   const user = db
     .prepare("SELECT id, name, email, role FROM users WHERE id = ?")

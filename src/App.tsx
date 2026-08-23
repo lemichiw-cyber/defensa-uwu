@@ -21,7 +21,7 @@ function AppContent() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingEvent, setEditingEvent] = useState<EventItem | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
-  /* Flujo INCOA: landing → splash (redrect) → sección del dashboard */
+
   const [splash, setSplash] = useState(false)
   const [pendingSection, setPendingSection] = useState<string | null>(null)
 
@@ -38,7 +38,7 @@ function AppContent() {
   }
 
   const openNewEvent = () => {
-    /* Guard: sin sesión no se puede crear; mandar a login */
+
     if (!user) {
       toast({ message: "Inicia sesión para crear eventos", variant: "destructive" })
       setView("dashboard")
@@ -53,7 +53,6 @@ function AppContent() {
     setDialogOpen(true)
   }
 
-  /* Entra a la plataforma vía Splash en la sección elegida (flujo de los HTML) */
   const entrarConSeccion = (sectionId: string) => {
     setPendingSection(sectionId)
     setView("dashboard")
@@ -79,7 +78,7 @@ function AppContent() {
     }
     try {
       if (editingEvent) {
-        /* PATCH parcial: no resetea el status actual del evento */
+
         await eventsApi.update(editingEvent.id, base)
         toast({ message: "Evento actualizado correctamente" })
       } else {
@@ -114,7 +113,7 @@ function AppContent() {
         )}
       </div>
       <Footer />
-      {/* Splash de carga (redrect.HTML) sobre el dashboard */}
+      {}
       {view === "dashboard" && splash && (
         <Splash onDone={() => setSplash(false)} />
       )}

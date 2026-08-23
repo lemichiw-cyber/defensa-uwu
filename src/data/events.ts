@@ -156,8 +156,7 @@ export function formatShortDate(iso: string): string {
   return `${d} ${meses[m - 1]} ${y}`
 }
 
-/** Fecha "actual" de la demo para el mini calendario */
-export const DEMO_TODAY = { year: 2024, month: 4, day: 15 } // 15 mayo 2024
+export const DEMO_TODAY = { year: 2024, month: 4, day: 15 }
 
 export const EVENT_DATES = new Set([
   "2024-05-24",

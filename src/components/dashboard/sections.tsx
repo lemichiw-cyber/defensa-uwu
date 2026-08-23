@@ -21,7 +21,6 @@ import {
   VisorSection,
 } from "@/components/dashboard/secciones-incoa"
 
-/* ---------- Apartado genérico estilo EduGest ---------- */
 function SectionPlaceholder({
   icon: Icon,
   titulo,
@@ -48,7 +47,6 @@ function SectionPlaceholder({
   )
 }
 
-/* ---------- Panel de administración (solo admins) ---------- */
 function UsuariosPanel() {
   const [users, setUsers] = useState<AdminUser[]>([])
   const [overview, setOverview] = useState<{
@@ -153,7 +151,6 @@ function UsuariosPanel() {
   )
 }
 
-/* ---------- Panel de temas (estilo EduGest) ---------- */
 function TemasPanel() {
   const { theme, setTheme } = useTheme()
   const { toast } = useToast()
@@ -187,7 +184,6 @@ function TemasPanel() {
   )
 }
 
-/* ---------- Acceso denegado (capa 2 frontend) ---------- */
 function AccesoDenegado() {
   return (
     <Card className="flex flex-col items-center gap-3 border-dashed border-red-300 p-10 text-center">
@@ -207,12 +203,12 @@ interface SectionsProps {
 }
 
 export function AdminSections({ section, esAdmin }: SectionsProps) {
-  /* Capa 2: aunque se fuerce la sección por estado, se valida el rol */
+
   const item = { protegido: true, aulas: true, matricula: true, usuarios: true, configuracion: true }[section]
   if (item && !esAdmin) return <AccesoDenegado />
 
   switch (section) {
-    /* ——— Secciones reales portadas de PaginaWeb.HTML (INCOA) ——— */
+
     case "actividades":
       return <ActividadesSection />
     case "examenes":
@@ -225,7 +221,7 @@ export function AdminSections({ section, esAdmin }: SectionsProps) {
       return <ClasesSection />
     case "visor":
       return <VisorSection />
-    /* ——— Secciones administrativas y auxiliares ——— */
+
     case "tareas":
       return <SectionPlaceholder icon={ClipboardCheck} titulo="Tareas" descripcion="Gestión de actividades asignadas." />
     case "recordatorios":

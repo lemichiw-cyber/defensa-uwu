@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react"
 
-/** Réplica del redrect.HTML: pantalla de carga que redirige a la plataforma */
 export function Splash({ onDone }: { onDone: () => void }) {
   const [progreso, setProgreso] = useState(0)
 
   useEffect(() => {
-    /* Barra de progreso animada durante los 3 segundos */
+
     const inicio = Date.now()
     const tick = setInterval(() => {
       const p = Math.min(100, ((Date.now() - inicio) / 3000) * 100)
@@ -32,7 +31,7 @@ export function Splash({ onDone }: { onDone: () => void }) {
       <h1 className="text-2xl font-bold">Cargando Plataforma</h1>
       <p className="opacity-80">Serás redirigido automáticamente en unos segundos...</p>
 
-      {/* Barra de progreso */}
+      {}
       <div className="h-1.5 w-56 overflow-hidden rounded-full bg-white/20">
         <div
           className="h-full rounded-full bg-yellow-400 transition-[width] duration-100"

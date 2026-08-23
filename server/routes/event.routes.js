@@ -14,7 +14,7 @@ const createEventSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida (AAAA-MM-DD)"),
   time: z.string().min(1, "La hora es obligatoria"),
   location: z.string().trim().min(2, "El lugar es obligatorio"),
-  /* URL válida o cadena vacía (usa el default de la BD) */
+
   image: z
     .union([z.string().trim().url("URL de imagen inválida"), z.literal("")])
     .optional()
@@ -24,7 +24,6 @@ const createEventSchema = z.object({
 
 const updateEventSchema = createEventSchema.partial()
 
-/* GET /api/events?status=&q= */
 router.get("/", (req, res) => {
   const { status, q, limit } = req.query
   const where = ["user_id = @userId"]
@@ -62,14 +61,12 @@ router.get("/", (req, res) => {
   res.json({ events: db.prepare(sql).all(params) })
 })
 
-/* GET /api/events/:id */
 router.get("/:id", (req, res) => {
   const event = findOwnedEvent(db, req.userId, Number(req.params.id))
   if (!event) return res.status(404).json({ error: "Evento no encontrado." })
   res.json({ event })
 })
 
-/* POST /api/events */
 router.post("/", (req, res) => {
   const parsed = createEventSchema.safeParse(req.body)
   if (!parsed.success) {
@@ -88,7 +85,6 @@ router.post("/", (req, res) => {
   res.status(201).json({ event })
 })
 
-/* PATCH /api/events/:id */
 router.patch("/:id", (req, res) => {
   const existing = findOwnedEvent(db, req.userId, Number(req.params.id))
   if (!existing) return res.status(404).json({ error: "Evento no encontrado." })
@@ -128,7 +124,6 @@ router.patch("/:id", (req, res) => {
   res.json({ event })
 })
 
-/* DELETE /api/events/:id — SOLO ADMIN (doble capa). El admin puede borrar cualquier evento */
 router.delete("/:id", requireAdmin, (req, res) => {
   const existing = findOwnedEvent(db, req.userId, Number(req.params.id))
   if (!existing) {
@@ -143,7 +138,6 @@ router.delete("/:id", requireAdmin, (req, res) => {
   res.status(204).end()
 })
 
-/* GET /api/stats — totales para el dashboard */
 export function mountStats(app) {
   app.get("/api/stats", requireAuth, (req, res) => {
     const userId = req.userId

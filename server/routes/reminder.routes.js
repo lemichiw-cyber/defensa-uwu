@@ -25,13 +25,11 @@ function loadEventOr404(req, res) {
 const SELECT = `SELECT id, event_id AS eventId, message, remind_at AS remindAt, sent
                   FROM reminders WHERE event_id = ?`
 
-/* GET /api/events/:eventId/reminders */
 router.get("/", (req, res) => {
   if (!loadEventOr404(req, res)) return
   res.json({ reminders: db.prepare(`${SELECT} ORDER BY remind_at ASC`).all(Number(req.params.eventId)) })
 })
 
-/* POST /api/events/:eventId/reminders */
 router.post("/", (req, res) => {
   if (!loadEventOr404(req, res)) return
   const parsed = createSchema.safeParse(req.body)
@@ -49,7 +47,6 @@ router.post("/", (req, res) => {
   })
 })
 
-/* DELETE /api/events/:eventId/reminders/:reminderId */
 router.delete("/:reminderId", (req, res) => {
   if (!loadEventOr404(req, res)) return
   const result = db

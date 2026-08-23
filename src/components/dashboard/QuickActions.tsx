@@ -7,7 +7,7 @@ interface QuickAction {
   label: string
   icon: LucideIcon
   iconBg: string
-  /** Acción: abrir diálogo o navegar a una sección */
+
   action: { type: "newEvent" } | { type: "section"; id: string }
 }
 

@@ -1,9 +1,5 @@
 import { useEffect } from "react"
 
-/**
- * Réplica del IntersectionObserver del NewIndex.HTML original:
- * los elementos .reveal aparecen con fade-up al entrar en pantalla.
- */
 export function useReveal() {
   useEffect(() => {
     const elementos = document.querySelectorAll(".reveal")

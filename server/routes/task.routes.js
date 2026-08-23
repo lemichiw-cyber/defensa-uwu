@@ -34,13 +34,11 @@ function loadEventOr404(req, res) {
 const SELECT = `SELECT id, event_id AS eventId, title, done, due_date AS dueDate
                   FROM tasks WHERE event_id = ?`
 
-/* GET /api/events/:eventId/tasks */
 router.get("/", (req, res) => {
   if (!loadEventOr404(req, res)) return
   res.json({ tasks: db.prepare(`${SELECT} ORDER BY done ASC, id ASC`).all(Number(req.params.eventId)) })
 })
 
-/* POST /api/events/:eventId/tasks */
 router.post("/", (req, res) => {
   if (!loadEventOr404(req, res)) return
   const parsed = createSchema.safeParse(req.body)
@@ -56,7 +54,6 @@ router.post("/", (req, res) => {
   })
 })
 
-/* PATCH /api/events/:eventId/tasks/:taskId */
 router.patch("/:taskId", (req, res) => {
   if (!loadEventOr404(req, res)) return
   const parsed = updateSchema.safeParse(req.body)
@@ -85,7 +82,6 @@ router.patch("/:taskId", (req, res) => {
   res.json({ task })
 })
 
-/* DELETE /api/events/:eventId/tasks/:taskId */
 router.delete("/:taskId", (req, res) => {
   if (!loadEventOr404(req, res)) return
   const result = db

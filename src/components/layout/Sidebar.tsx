@@ -10,7 +10,6 @@ interface SidebarProps {
   onSelect: (id: string) => void
 }
 
-/** Menú lateral para escritorio (versión móvil en el Sheet del Navbar) */
 export function Sidebar({
   collapsed,
   active,
@@ -18,7 +17,7 @@ export function Sidebar({
   onToggleCollapse,
   onSelect,
 }: SidebarProps) {
-  /* Doble capa: los apartados admin no se muestran a usuarios comunes */
+
   const visibles = sidebarItems.filter((item) => !item.soloAdmin || esAdmin)
 
   return (

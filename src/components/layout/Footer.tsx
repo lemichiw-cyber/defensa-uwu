@@ -47,7 +47,7 @@ export function Footer() {
     <footer className="bg-[#2E1065] text-white">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
-          {/* Marca + newsletter */}
+          {}
           <div className="space-y-5">
             <div className="flex items-center gap-2.5">
               <span className="flex size-9 items-center justify-center rounded-xl bg-white text-[#2563eb]">
@@ -93,7 +93,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Columnas de links */}
+          {}
           {columns.map((col) => (
             <nav key={col.title} aria-label={col.title} className="space-y-4">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-violet-300">

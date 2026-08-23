@@ -23,11 +23,10 @@ export interface SidebarItem {
   id: string
   label: string
   icon: LucideIcon
-  /** Solo visible/funcional para administradores */
+
   soloAdmin?: boolean
 }
 
-/* Apartados copiados de EduGest (proyecto_web) */
 export const sidebarItems: SidebarItem[] = [
   { id: "inicio", label: "Inicio", icon: Home },
   { id: "actividades", label: "Actividades", icon: ClipboardList },
@@ -40,7 +39,7 @@ export const sidebarItems: SidebarItem[] = [
   { id: "mensajes", label: "Mensajes", icon: Mail },
   { id: "tareas", label: "Tareas", icon: ClipboardCheck },
   { id: "recordatorios", label: "Recordatorios", icon: Bell },
-  /* ——— Solo administradores (doble capa) ——— */
+
   { id: "protegido", label: "Seguridad", icon: ShieldCheck, soloAdmin: true },
   { id: "aulas", label: "Aulas Virtuales", icon: Building2, soloAdmin: true },
   { id: "matricula", label: "Matrícula", icon: UserPlus, soloAdmin: true },

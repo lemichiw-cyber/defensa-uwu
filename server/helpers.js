@@ -7,8 +7,6 @@ const JWT_SECRET = new TextEncoder().encode(
 )
 const TOKEN_EXPIRY = "7d"
 
-/* ---------- Contraseñas (scrypt, sin dependencias nativas) ---------- */
-
 export function hashPassword(password) {
   const salt = crypto.randomBytes(16).toString("hex")
   const hash = crypto.scryptSync(password, salt, 64).toString("hex")
@@ -25,8 +23,6 @@ export function verifyPassword(password, stored) {
     crypto.timingSafeEqual(candidate, expected)
   )
 }
-
-/* ---------- JWT (jose) ---------- */
 
 export async function signToken(payload) {
   return new SignJWT(payload)
@@ -45,8 +41,6 @@ export async function verifyToken(token) {
   }
 }
 
-/* ---------- Middleware de autenticación ---------- */
-
 export async function requireAuth(req, res, next) {
   const header = req.headers.authorization ?? ""
   const token = header.startsWith("Bearer ") ? header.slice(7) : null
@@ -61,7 +55,6 @@ export async function requireAuth(req, res, next) {
   next()
 }
 
-/* Doble capa: verificación de rol admin en el servidor */
 export function requireAdmin(req, res, next) {
   const row = db.prepare("SELECT role FROM users WHERE id = ?").get(req.userId)
   if (!row || row.role !== "admin") {
@@ -73,9 +66,6 @@ export function requireAdmin(req, res, next) {
   next()
 }
 
-/* ---------- Utilidades ---------- */
-
-/** Devuelve la fila del evento solo si pertenece al usuario; si no, null. */
 export function findOwnedEvent(db, userId, eventId) {
   return db
     .prepare(
@@ -100,4 +90,3 @@ export function zodMessage(result) {
   return field ? `${field}: ${issue.message}` : issue.message
 }
 
-/** Extrae un parámetro numérico de ruta; responde 400 si no es válido. */

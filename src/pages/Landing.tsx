@@ -1,8 +1,6 @@
 import { GraduationCap, Palette, Settings2 } from "lucide-react"
 import { useReveal } from "@/hooks/useReveal"
 
-/* Tarjetas del portafolio — cada una entra a la plataforma en su sección
-   pasando por el Splash (flujo NewIndex → redrect → PaginaWeb) */
 const PORTFOLIO = [
   {
     id: "actividades",
@@ -79,7 +77,7 @@ export function Landing({ onEnterSection }: LandingProps) {
 
   return (
     <div className="bg-white" id="top">
-      {/* ===== HERO (fiel a NewIndex.HTML) ===== */}
+      {}
       <section className="relative flex min-h-[92vh] flex-col items-center justify-center text-center text-white">
         <img
           src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1950&q=80"
@@ -117,7 +115,7 @@ export function Landing({ onEnterSection }: LandingProps) {
         </div>
       </section>
 
-      {/* ===== SERVICIOS ===== */}
+      {}
       <section id="services" className="bg-white px-6 py-24 md:px-[10%]">
         <h2 className="text-center text-3xl font-bold uppercase tracking-widest text-gray-900">
           Services
@@ -142,7 +140,7 @@ export function Landing({ onEnterSection }: LandingProps) {
         </div>
       </section>
 
-      {/* ===== STATS (barra azul INCOA) ===== */}
+      {}
       <section style={{ background: "linear-gradient(135deg,#2563eb,#1e3a5f)" }}>
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-10 px-6 py-16 text-center text-white lg:grid-cols-4">
           {STATS.map((s) => (
@@ -154,7 +152,7 @@ export function Landing({ onEnterSection }: LandingProps) {
         </div>
       </section>
 
-      {/* ===== PORTAFOLIO — cada tarjeta entra a su sección vía Splash ===== */}
+      {}
       <section id="portfolio" className="bg-gray-50 px-6 py-24 md:px-[10%]">
         <h2 className="text-center text-3xl font-bold uppercase tracking-widest text-gray-900">
           Portfolio
@@ -177,7 +175,7 @@ export function Landing({ onEnterSection }: LandingProps) {
                 loading="lazy"
                 className="size-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
-              {/* Overlay azul al hover (como el original) */}
+              {}
               <div
                 className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                 style={{ background: "rgba(37,99,235,.9)" }}
@@ -193,7 +191,7 @@ export function Landing({ onEnterSection }: LandingProps) {
         </div>
       </section>
 
-      {/* ===== CTA FINAL ===== */}
+      {}
       <section id="contact" className="px-6 py-24 text-center" style={{ background: "#0f172a" }}>
         <h2 className="text-3xl font-bold text-white sm:text-4xl">¿Listo para comenzar?</h2>
         <p className="mx-auto mt-4 max-w-xl text-gray-300">
@@ -208,7 +206,7 @@ export function Landing({ onEnterSection }: LandingProps) {
         </button>
       </section>
 
-      {/* ===== FOOTER INCOA ===== */}
+      {}
       <footer className="bg-slate-950 pb-8 pt-14 text-gray-400">
         <div className="mx-auto grid max-w-6xl gap-10 px-6 md:grid-cols-3">
           <div>

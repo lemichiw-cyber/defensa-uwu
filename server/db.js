@@ -5,7 +5,6 @@ import { fileURLToPath } from "node:url"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-/* Ruta de la BD configurable (Docker: /data/data.sqlite en volumen persistente) */
 const DB_PATH = process.env.DB_PATH ?? path.resolve(__dirname, "data.sqlite")
 export const db = new DatabaseSync(DB_PATH)
 
@@ -78,7 +77,6 @@ function hashPassword(password) {
   return `${salt}:${hash}`
 }
 
-/* Migración: añade la columna role a bases de datos existentes */
 try {
   db.prepare("SELECT role FROM users LIMIT 1").get()
 } catch {
@@ -92,14 +90,14 @@ function seedIfEmpty() {
   const insertUser = db.prepare(
     "INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)"
   )
-  /* ADMIN — acceso total a funciones de administración */
+
   insertUser.run(
     "María García",
     "maria@mievento.com",
     hashPassword("demo1234"),
     "admin"
   )
-  /* USUARIO COMÚN — sin funciones de administrador */
+
   const infoUsuario = insertUser.run(
     "Carlos López",
     "carlos@mievento.com",

@@ -30,7 +30,7 @@ const iniciales = (nombre: string) =>
 export function Navbar({ view, onNavigate, onNewEvent }: NavbarProps) {
   const { user, esAdmin, logout } = useAuth()
   const [menuAbierto, setMenuAbierto] = useState(false)
-  /* Header transparente sobre el hero de la landing (estilo NewIndex.HTML) */
+
   const onLanding = view === "landing"
 
   const irA = (destino: string) => {
@@ -48,7 +48,7 @@ export function Navbar({ view, onNavigate, onNewEvent }: NavbarProps) {
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-        {/* Logo */}
+        {}
         <button
           onClick={() => onNavigate("landing")}
           className="flex items-center gap-2 transition-opacity hover:opacity-80"
@@ -67,7 +67,7 @@ export function Navbar({ view, onNavigate, onNewEvent }: NavbarProps) {
           </span>
         </button>
 
-        {/* Navegación */}
+        {}
         {onLanding && (
           <button
             onClick={() => setMenuAbierto((v) => !v)}
@@ -163,7 +163,7 @@ export function Navbar({ view, onNavigate, onNewEvent }: NavbarProps) {
         </div>
       </div>
 
-      {/* Menú móvil de la landing */}
+      {}
       {onLanding && menuAbierto && (
         <nav className="border-t border-white/15 bg-slate-900/95 px-4 pb-4 pt-2 backdrop-blur md:hidden">
           {[

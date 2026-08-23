@@ -17,7 +17,7 @@ import { eventsApi, type EventItem, type Stats } from "@/lib/api"
 import { type EventItem as LocalEventItem } from "@/data/events"
 
 interface DashboardProps {
-  /** Sección inicial (flujo INCOA: tarjeta del portafolio → splash → sección) */
+
   initialSection?: string | null
   onNewEvent: () => void
   onEditEvent: (event: LocalEventItem) => void
@@ -62,7 +62,6 @@ export function Dashboard({ initialSection, onNewEvent, onEditEvent, onDeleteEve
     }
   }, [])
 
-  /* Reintento manual (botón) */
   const retry = () => {
     setError(null)
     setLoading(true)
@@ -123,7 +122,7 @@ export function Dashboard({ initialSection, onNewEvent, onEditEvent, onDeleteEve
       />
 
       <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
-        {/* Navegación de secciones para móvil (la sidebar está oculta) */}
+        {}
         <div className="mb-5 flex gap-2 overflow-x-auto pb-1 md:hidden" role="tablist" aria-label="Secciones">
           {sidebarItems
             .filter((item) => !item.soloAdmin || esAdmin)

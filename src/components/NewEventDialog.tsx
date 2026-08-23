@@ -25,7 +25,6 @@ export interface FormData {
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=640&auto=format&fit=crop"
 
-/** "19:30" -> "7:30 PM" */
 function formatTime(hhmm: string): string {
   const [h, m] = hhmm.split(":").map(Number)
   const period = h >= 12 ? "PM" : "AM"
@@ -71,7 +70,7 @@ const EventForm = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    /* El toast de éxito se muestra desde App.handleSave tras confirmar la API */
+
     onSubmit({
       title: form.title.trim(),
       description: form.description.trim() || undefined,

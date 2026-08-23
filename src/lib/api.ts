@@ -49,7 +49,6 @@ export const api = {
     request<T>(path, { method: "DELETE" }),
 }
 
-/* Tipos */
 export interface User {
   id: number
   name: string
@@ -105,7 +104,6 @@ export interface AuthResponse {
   user: User
 }
 
-/* Auth endpoints */
 export const authApi = {
   register: (data: { name: string; email: string; password: string }) =>
     api.post<AuthResponse>("/auth/register", data),
@@ -114,7 +112,6 @@ export const authApi = {
   me: () => api.get<{ user: User }>("/auth/me"),
 }
 
-/* Events endpoints */
 export const eventsApi = {
   list: (params?: { status?: string; q?: string; limit?: number }) => {
     const qs = new URLSearchParams()
@@ -132,7 +129,6 @@ export const eventsApi = {
   stats: () => api.get<Stats>("/stats"),
 }
 
-/* Guests endpoints */
 export const guestsApi = {
   list: (eventId: number) => api.get<{ guests: Guest[] }>(`/events/${eventId}/guests`),
   create: (eventId: number, data: { name: string; email: string; rsvp?: Guest["rsvp"] }) =>
@@ -142,7 +138,6 @@ export const guestsApi = {
   delete: (eventId: number, guestId: number) => api.delete<void>(`/events/${eventId}/guests/${guestId}`),
 }
 
-/* Tasks endpoints */
 export const tasksApi = {
   list: (eventId: number) => api.get<{ tasks: Task[] }>(`/events/${eventId}/tasks`),
   create: (eventId: number, data: { title: string; done?: boolean; dueDate?: string | null }) =>
@@ -152,14 +147,13 @@ export const tasksApi = {
   delete: (eventId: number, taskId: number) => api.delete<void>(`/events/${eventId}/tasks/${taskId}`),
 }
 
-/* Reminders endpoints */
 export const remindersApi = {
   list: (eventId: number) => api.get<{ reminders: Reminder[] }>(`/events/${eventId}/reminders`),
   create: (eventId: number, data: { message: string; remindAt: string }) =>
     api.post<{ reminder: Reminder }>(`/events/${eventId}/reminders`, data),
   delete: (eventId: number, reminderId: number) => api.delete<void>(`/events/${eventId}/reminders/${reminderId}`),
 }
-/* Admin endpoints — requieren rol admin (verificado en servidor) */
+
 export interface AdminUser {
   id: number
   name: string

@@ -39,7 +39,7 @@ export function LoginPage({ onSuccess }: { onSuccess: () => void }) {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-gray-50 px-4 py-10">
       <div className="grid w-full max-w-4xl overflow-hidden rounded-2xl shadow-lg md:grid-cols-2">
-        {/* ===== Panel izquierdo — gradiente INCOA (estilo redrect/hero) ===== */}
+        {}
         <div
           className="relative hidden flex-col justify-between p-10 text-white md:flex"
           style={{ background: "linear-gradient(135deg,#2563eb,#1e3a5f)" }}
@@ -78,7 +78,7 @@ export function LoginPage({ onSuccess }: { onSuccess: () => void }) {
           </p>
         </div>
 
-        {/* ===== Panel derecho — formulario ===== */}
+        {}
         <div className="bg-white p-7 sm:p-9">
           <div className="mb-6 text-center md:text-left">
             <h1 className="text-2xl font-bold text-gray-900">

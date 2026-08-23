@@ -17,7 +17,7 @@ export function MiniCalendar() {
   const hoy = new Date()
   const [cursor, setCursor] = useState({ year: hoy.getFullYear(), month: hoy.getMonth() })
   const [selected, setSelected] = useState<string | null>(null)
-  /* Días que tienen eventos próximos reales */
+
   const [eventDays, setEventDays] = useState<Set<string>>(new Set())
 
   const { year, month } = cursor

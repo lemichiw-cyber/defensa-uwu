@@ -9,11 +9,10 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 )
 
-/* PWA: registrar service worker (instalable en teléfonos como app) */
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {
-      /* sin SW la app funciona igual; solo pierde el modo offline */
+
     })
   })
 }

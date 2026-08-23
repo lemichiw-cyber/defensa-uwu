@@ -48,8 +48,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }
 
-  /* Doble capa (capa 2): el frontend oculta funciones admin a usuarios comunes.
-     La capa 1 es el middleware requireAdmin en el servidor. */
   const esAdmin = user?.role === "admin"
 
   return (

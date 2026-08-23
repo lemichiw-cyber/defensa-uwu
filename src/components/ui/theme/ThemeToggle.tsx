@@ -3,7 +3,7 @@ import { Palette, Check } from "lucide-react"
 import { THEMES, useTheme } from "@/components/ui/theme/ThemeContext"
 
 interface ThemeToggleProps {
-  /** "onDark": para fondos oscuros (header transparente sobre el hero) */
+
   variant?: "solid" | "onDark"
 }
 

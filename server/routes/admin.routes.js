@@ -4,10 +4,8 @@ import { requireAuth, requireAdmin } from "../helpers.js"
 
 const router = Router()
 
-/* Todo /api/admin requiere autenticación + rol admin — capa 1 del backend */
 router.use(requireAuth, requireAdmin)
 
-/* GET /api/admin/users — lista de cuentas registradas */
 router.get("/users", (_req, res) => {
   const users = db
     .prepare("SELECT id, name, email, role, created_at FROM users ORDER BY id")
@@ -15,7 +13,6 @@ router.get("/users", (_req, res) => {
   res.json({ users })
 })
 
-/* PATCH /api/admin/users/:id/role — cambiar rol */
 router.patch("/users/:id/role", (req, res) => {
   const { role } = req.body ?? {}
   if (!["usuario", "admin"].includes(role)) {
@@ -25,7 +22,6 @@ router.patch("/users/:id/role", (req, res) => {
   const user = db.prepare("SELECT id FROM users WHERE id = ?").get(id)
   if (!user) return res.status(404).json({ error: "Usuario no encontrado." })
 
-  /* Un admin no puede quitarse su propio rol admin */
   if (id === req.userId && role !== "admin") {
     return res.status(400).json({ error: "No puedes quitarte tu propio rol admin." })
   }
@@ -34,7 +30,6 @@ router.patch("/users/:id/role", (req, res) => {
   res.json({ ok: true })
 })
 
-/* GET /api/admin/overview — resumen global del sistema */
 router.get("/overview", (_req, res) => {
   const overview = {
     users: db.prepare("SELECT COUNT(*) AS n FROM users").get().n,

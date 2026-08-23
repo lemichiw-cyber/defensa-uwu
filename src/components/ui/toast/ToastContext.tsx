@@ -44,7 +44,7 @@ function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      {/* Contenedor visual de toasts */}
+      {}
       <div
         aria-live="polite"
         className="pointer-events-none fixed right-4 top-4 z-[100] flex w-full max-w-xs flex-col gap-2"

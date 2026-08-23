@@ -26,12 +26,10 @@ app.use("/api/events/:eventId/tasks", taskRoutes)
 app.use("/api/events/:eventId/reminders", reminderRoutes)
 app.use("/api/admin", adminRoutes)
 
-/* 404 para rutas de API desconocidas */
 app.use("/api", (_req, res) => {
   res.status(404).json({ error: "Ruta no encontrada." })
 })
 
-/* Manejador global de errores */
 app.use((err, _req, res, _next) => {
   console.error("[error]", err)
   res.status(500).json({ error: "Error interno del servidor." })

@@ -1,4 +1,3 @@
-# ── Frontend MiEvento: build Vite + servido por nginx ──
 FROM node:20-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json* ./

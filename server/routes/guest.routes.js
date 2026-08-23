@@ -20,7 +20,6 @@ const updateSchema = z.object({
   rsvp: z.enum(RSVP_VALUES).optional(),
 })
 
-/** Carga el evento y comprueba que pertenece al usuario autenticado */
 function loadEventOr404(req, res) {
   const event = findOwnedEvent(db, req.userId, Number(req.params.eventId))
   if (!event) {
@@ -30,7 +29,6 @@ function loadEventOr404(req, res) {
   return event
 }
 
-/* GET /api/events/:eventId/guests */
 router.get("/", (req, res) => {
   if (!loadEventOr404(req, res)) return
   const guests = db
@@ -42,7 +40,6 @@ router.get("/", (req, res) => {
   res.json({ guests })
 })
 
-/* POST /api/events/:eventId/guests */
 router.post("/", (req, res) => {
   if (!loadEventOr404(req, res)) return
   const parsed = createSchema.safeParse(req.body)
@@ -69,7 +66,6 @@ router.post("/", (req, res) => {
   }
 })
 
-/* PATCH /api/events/:eventId/guests/:guestId */
 router.patch("/:guestId", (req, res) => {
   if (!loadEventOr404(req, res)) return
   const parsed = updateSchema.safeParse(req.body)
@@ -96,7 +92,6 @@ router.patch("/:guestId", (req, res) => {
   res.json({ guest })
 })
 
-/* DELETE /api/events/:eventId/guests/:guestId */
 router.delete("/:guestId", (req, res) => {
   if (!loadEventOr404(req, res)) return
   const result = db
