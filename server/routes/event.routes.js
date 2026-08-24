@@ -67,6 +67,36 @@ router.get("/:id", (req, res) => {
   res.json({ event })
 })
 
+// GET /api/events/:id/export.ics — descarga para calendario (iCalendar)
+router.get("/:id/export.ics", (req, res) => {
+  const ev = findOwnedEvent(db, req.userId, Number(req.params.id));
+  if (!ev) return res.status(404).json({ error: "Evento no encontrado." });
+
+  const escapar = (t) => String(t || "").replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+  const ics = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//MiEvento//ES",
+    "CALSCALE:GREGORIAN",
+    "BEGIN:VEVENT",
+    `UID:evento-${ev.id}@mievento`,
+    `DTSTAMP:${stamp}`,
+    `DTSTART;VALUE=DATE:${ev.date.replace(/-/g, "")}`,
+    `SUMMARY:${escapar(ev.title)}`,
+    `DESCRIPTION:${escapar(ev.description || "Organizado con MiEvento")}`,
+    `LOCATION:${escapar(ev.location)}`,
+    "END:VEVENT",
+    "END:VCALENDAR"
+  ].join("\r\n");
+
+  res.writeHead(200, {
+    "Content-Type": "text/calendar; charset=utf-8",
+    "Content-Disposition": `attachment; filename="evento-${ev.id}.ics"`
+  });
+  res.end(ics);
+});
+
 router.post("/", (req, res) => {
   const parsed = createEventSchema.safeParse(req.body)
   if (!parsed.success) {

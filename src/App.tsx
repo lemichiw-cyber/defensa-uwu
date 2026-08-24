@@ -98,6 +98,11 @@ function AppContent() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background font-sans text-foreground antialiased">
+      {import.meta.env.VITE_DEMO_MODE === "true" && (
+        <div className="bg-yellow-400 py-1.5 text-center text-sm font-bold text-slate-900">
+          🧪 Modo Demo — los datos mostrados son de prueba
+        </div>
+      )}
       <Navbar view={view} onNavigate={setView} onNewEvent={openNewEvent} />
       <div className="flex-1">
         {view === "dashboard" ? (

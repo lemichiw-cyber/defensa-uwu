@@ -22,9 +22,9 @@ Recommendation: start on **Gumroad** today, submit to **CodeCanyon** for reach.
 
 | Tier | Price | What's included |
 |------|-------|-----------------|
-| 🥉 Personal | **$29** | Full source, single end-product, personal/commercial use, 6 months updates |
-| 🥈 Commercial | **$79** | Previous + use in client products, priority email support 3 months, deployment help doc |
-| 🥇 Extended / White-label | **$149–199** | Previous + resale rights inside your own SaaS, removal of branding, 12 months updates |
+| 🥉 Personal | **$49** | Full source, single end-product, personal/commercial use, 6 months updates |
+| 🥈 Commercial | **$99** | Previous + use in client products, priority email support 3 months, deployment help doc |
+| 🥇 Extended / Resale | **$199** | Previous + resale rights inside your own SaaS, removal of branding, 12 months updates |
 
 Anchoring tips: put the Extended tier first (left), show Commercial as “most popular”.
 Offer an installation service add-on (+$49) — high margin, low effort.

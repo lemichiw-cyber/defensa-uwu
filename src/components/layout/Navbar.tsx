@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ThemeToggle } from "@/components/ui/theme/ThemeToggle"
 import { useAuth } from "@/context/AuthContext"
+import { t } from "@/i18n"
 import { cn } from "@/lib/utils"
 
 interface NavbarProps {
@@ -63,7 +64,7 @@ export function Navbar({ view, onNavigate, onNewEvent }: NavbarProps) {
               onLanding ? "text-white" : "text-gray-900"
             )}
           >
-            MiEvento
+            {t("app.nombre")}
           </span>
         </button>
 
@@ -79,7 +80,7 @@ export function Navbar({ view, onNavigate, onNewEvent }: NavbarProps) {
           </button>
         )}
         <nav className={cn("items-center gap-1 md:flex", onLanding ? "hidden" : "hidden md:flex")}>
-          {["Inicio", "Eventos", "Calendario", "Invitados", "Reportes"].map((link) => (
+          {["nav.inicio", "nav.eventos", "nav.calendario", "nav.invitados", "nav.reportes"].map((key) => t(key)).map((link) => (
             <button
               key={link}
               onClick={() => irA(link)}

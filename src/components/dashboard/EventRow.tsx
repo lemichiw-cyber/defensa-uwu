@@ -1,4 +1,5 @@
-import { CalendarDays, Clock, MapPin, MoreVertical, Pencil, Trash2 } from "lucide-react"
+import { CalendarDays, CalendarPlus, Clock, MapPin, MoreVertical, Pencil, Trash2 } from "lucide-react"
+import { api } from "@/lib/api"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -20,6 +21,21 @@ interface EventRowProps {
 
 export function EventRow({ event, onEdit, onDelete }: EventRowProps) {
   const { esAdmin } = useAuth()
+
+  const descargarIcs = async () => {
+    try {
+      const blob = await api.download(`/events/${event.id}/export.ics`)
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `${event.title.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}.ics`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      /* el toast global de sesión expirada cubre 401 */
+    }
+  }
+
   return (
     <Card className="group flex items-center gap-4 p-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md sm:p-4">
       <img
@@ -31,7 +47,17 @@ export function EventRow({ event, onEdit, onDelete }: EventRowProps) {
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <h3 className="truncate font-semibold text-gray-900">{event.title}</h3>
+          <div className="flex min-w-0 items-center gap-2">
+            <h3 className="truncate font-semibold text-gray-900">{event.title}</h3>
+            <button
+              onClick={descargarIcs}
+              title="Añadir a mi calendario (.ics)"
+              aria-label={`Exportar ${event.title} a calendario`}
+              className="shrink-0 rounded p-1 text-gray-400 transition-colors hover:bg-violet-100 hover:text-violet-700"
+            >
+              <CalendarPlus className="size-4" />
+            </button>
+          </div>
           <Badge className="rounded-full border-transparent bg-violet-100 text-violet-700 hover:bg-violet-100">
             Próximo
           </Badge>
