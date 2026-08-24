@@ -1,5 +1,7 @@
 import express from "express"
 import cors from "cors"
+import helmet from "helmet"
+import rateLimit from "express-rate-limit"
 import "./db.js"
 import authRoutes from "./routes/auth.routes.js"
 import eventRoutes, { mountStats } from "./routes/event.routes.js"
@@ -11,8 +13,17 @@ import adminRoutes from "./routes/admin.routes.js"
 const app = express()
 const PORT = process.env.PORT ?? 3001
 
+app.use(helmet({ contentSecurityPolicy: false }))
 app.use(cors())
 app.use(express.json())
+
+// Anti fuerza-bruta: 20 intentos de login/registro por IP cada 15 min
+const limiterAuth = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, standardHeaders: true, legacyHeaders: false })
+// API general: 300 peticiones por IP cada 15 min
+const limiterApi = rateLimit({ windowMs: 15 * 60 * 1000, max: 300, standardHeaders: true, legacyHeaders: false })
+
+app.use("/api/auth", limiterAuth)
+app.use(limiterApi)
 
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, service: "MiEvento API", time: new Date().toISOString() })

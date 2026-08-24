@@ -2,9 +2,16 @@ import crypto from "node:crypto"
 import { SignJWT, jwtVerify } from "jose"
 import { db } from "./db.js"
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET ?? "mievento-dev-secret-cambia-en-produccion"
-)
+function resolverJwtSecret() {
+  const secreto = process.env.JWT_SECRET;
+  if (secreto) return new TextEncoder().encode(secreto);
+  if (process.env.NODE_ENV === "production") {
+    console.error("FATAL: la variable de entorno JWT_SECRET es obligatoria en producción.");
+    process.exit(1);
+  }
+  return new TextEncoder().encode("mievento-dev-secret-solo-desarrollo");
+}
+const JWT_SECRET = resolverJwtSecret()
 const TOKEN_EXPIRY = "7d"
 
 export function hashPassword(password) {

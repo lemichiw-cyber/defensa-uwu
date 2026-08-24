@@ -1,7 +1,7 @@
 {
   "name": "mievento",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "concurrently -k -n web,api \"vite\" \"npm:dev:server\"",
@@ -17,6 +17,8 @@
     "clsx": "^2.1.1",
     "cors": "^2.8.6",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.6.2",
+    "helmet": "^8.3.0",
     "jose": "^6.2.10",
     "lucide-react": "^1.33.0",
     "radix-ui": "^1.6.7",
@@ -36,5 +38,6 @@
     "oxlint": "^1.75.0",
     "typescript": "~6.0.2",
     "vite": "^8.2.0"
-  }
+  },
+  "license": "MIT"
 }

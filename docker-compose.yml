@@ -10,8 +10,7 @@ services:
     environment:
       - NODE_ENV=production
       - DB_PATH=/data/data.sqlite
-      # ⚠️ Cambia este secreto en producción
-      - JWT_SECRET=mievento-docker-secret-cambia-en-produccion
+      - JWT_SECRET=${JWT_SECRET:-cambia-este-secreto-antes-de-produccion}
     ports:
       - "3001:3001"
     volumes:
