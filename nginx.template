@@ -14,8 +14,10 @@ server {
         add_header Cache-Control "public, immutable";
     }
 
+    # Origen del API configurable: en docker-compose es http://api:3001,
+    # en Render se define API_ORIGIN=https://tu-api.onrender.com
     location /api/ {
-        proxy_pass http://api:3001;
+        proxy_pass ${API_ORIGIN};
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -23,8 +25,8 @@ server {
         proxy_read_timeout 60s;
     }
 
-    location = /sw.js            { add_header Cache-Control "no-cache"; }
-    location = /manifest.webmanifest { types { } default_type application/manifest+json; }
+    location = /sw.js                { add_header Cache-Control "no-cache"; }
+    location = /manifest.webmanifest { default_type application/manifest+json; }
 
     location / {
         try_files $uri $uri/ /index.html;

@@ -25,8 +25,13 @@ services:
     container_name: mievento-web
     depends_on:
       - api
+    environment:
+      # Dentro de la red de compose, el API es el servicio `api`
+      - API_ORIGIN=http://api:3001
     ports:
       - "8080:80"
+    depends_on:
+      - api
     restart: unless-stopped
 
 volumes:
