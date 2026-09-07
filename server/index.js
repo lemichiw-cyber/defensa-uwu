@@ -6,11 +6,14 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import crypto from "node:crypto";
 import { SignJWT, jwtVerify } from "jose";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import fs from "node:fs";
 import WebSocket from "ws";
 
-// Polyfill WebSocket for Node.js < 22
 globalThis.WebSocket = WebSocket;
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT ?? 3001;
 
@@ -424,6 +427,35 @@ app.patch("/api/admin/users/:id/role", requireAuth, requireAdmin, async (req, re
 app.use("/api", (_req, res) => {
   res.status(404).json({ error: "Ruta no encontrada." });
 });
+
+// ── Static files (frontend) ──────────────────────────────
+// En Render, el root directory es server/, así que buscamos public/ en la raíz del repo
+const possiblePublicPaths = [
+  path.resolve(__dirname, "..", "public"),           // Render: server/ -> repo root -> public/
+  path.resolve(__dirname, "public"),                  // Si public/ está dentro de server/
+  path.resolve(process.cwd(), "public"),              // CWD
+];
+
+let publicDir = null;
+for (const p of possiblePublicPaths) {
+  if (fs.existsSync(p)) {
+    publicDir = p;
+    break;
+  }
+}
+
+if (publicDir) {
+  console.log(`[MiEvento] Sirviendo frontend desde: ${publicDir}`);
+  app.use(express.static(publicDir));
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(publicDir, "index.html"));
+  });
+} else {
+  console.log("[MiEvento] No se encontró carpeta public/, sirviendo solo API");
+  app.get("/", (_req, res) => {
+    res.json({ ok: true, service: "MiEvento API", message: "API running. Frontend not found." });
+  });
+}
 
 // ── Error handler ─────────────────────────────────────────
 app.use((err, _req, res, _next) => {
