@@ -429,11 +429,10 @@ app.use("/api", (_req, res) => {
 });
 
 // ── Static files (frontend) ──────────────────────────────
-// En Render, el root directory es server/, así que buscamos public/ en la raíz del repo
 const possiblePublicPaths = [
-  path.resolve(__dirname, "..", "public"),           // Render: server/ -> repo root -> public/
-  path.resolve(__dirname, "public"),                  // Si public/ está dentro de server/
-  path.resolve(process.cwd(), "public"),              // CWD
+  path.resolve(__dirname, "..", "public"),
+  path.resolve(__dirname, "public"),
+  path.resolve(process.cwd(), "public"),
 ];
 
 let publicDir = null;
@@ -447,8 +446,13 @@ for (const p of possiblePublicPaths) {
 if (publicDir) {
   console.log(`[MiEvento] Sirviendo frontend desde: ${publicDir}`);
   app.use(express.static(publicDir));
-  app.get("*", (_req, res) => {
-    res.sendFile(path.join(publicDir, "index.html"));
+  // Express 5 compatible catch-all (no usar app.get("*"))
+  app.use((req, res, next) => {
+    if (req.method === "GET" && !req.path.startsWith("/api")) {
+      res.sendFile(path.join(publicDir, "index.html"));
+    } else {
+      next();
+    }
   });
 } else {
   console.log("[MiEvento] No se encontró carpeta public/, sirviendo solo API");
