@@ -48,10 +48,15 @@ function hashEmail(email) {
   return crypto.createHash("sha256").update(email.toLowerCase()).digest("hex");
 }
 
-// ── Supabase ──────────────────────────────────────────────
+// ── Supabase (sin realtime para evitar WebSocket) ────────
 const supabase = createClient(
   process.env.SUPABASE_URL ?? "http://localhost:54321",
-  process.env.SUPABASE_SERVICE_ROLE_KEY ?? "service-role-key"
+  process.env.SUPABASE_SERVICE_ROLE_KEY ?? "service-role-key",
+  {
+    realtime: {
+      params: { eventsPerSecond: 0 }
+    }
+  }
 );
 
 // ── JWT ───────────────────────────────────────────────────
@@ -276,7 +281,6 @@ app.get("/api/events", requireAuth, async (req, res) => {
     createdAt: ev.created_at
   }));
 
-  // Filtro por búsqueda en memoria (datos cifrados no permiten ILIKE)
   let filtered = events;
   if (q && typeof q === "string") {
     const search = q.toLowerCase();
