@@ -1,108 +1,116 @@
-# ============================================================
 # MiEvento v2.0 — Plataforma de Gestión de Eventos
-# ============================================================
-#
-# Stack:
-#   - Backend: Express 5 + Supabase (PostgreSQL)
-#   - Frontend: HTML5 + CSS3 + JavaScript/TypeScript (Vanilla ES Modules)
-#   - Auth: JWT (HS256) + scrypt password hashing
-#   - Seguridad: Helmet, Rate Limiting, Zod validation, RLS
-#
-# Despliegue: Docker o VPS (Node.js >= 20)
-# ============================================================
 
-## 🚀 Quick Start
+## 🏗️ Arquitectura
 
-### 1. Clonar e instalar
-```bash
-git clone https://github.com/tu-usuario/defensa-uwu.git mievento
-cd mievento
-npm install
-cp .env.example .env   # Editar con tus valores
-npm start
+```
+┌─────────────────────────────────────────────────────────────┐
+│  GitHub Pages (Frontend)                                     │
+│  - HTML5 + CSS3 + JavaScript (Vanilla ES Modules)           │
+│  - Sin build step, sin dependencias                         │
+│  - URL: https://lemichiw-cyber.github.io/defensa-uwu        │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              │ fetch()
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│  Railway.app (Backend API)                                   │
+│  - Express 5 + Supabase + AES-256-GCM encryption            │
+│  - JWT auth + scrypt password hashing                       │
+│  - URL: https://mievento-api.up.railway.app                 │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              │ SQL
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│  Supabase (PostgreSQL)                                       │
+│  - Datos cifrados (bytea) + RLS                             │
+│  - email_hash para login sin descifrar                      │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### 2. Configurar Supabase
-1. Crear proyecto en [supabase.com](https://supabase.com)
-2. Ir a **SQL Editor** → ejecutar el contenido de `supabase.sql`
-3. Copiar URL y Service Role Key → pegar en `.env`
+## 🚀 Deploy
 
-### 3. Acceder
-- Web: <http://localhost:3001>
-- Admin: `maria@mievento.com` / `demo1234`
-- Usuario: `carlos@mievento.com` / `demo1234`
+### 1. Supabase (Base de datos)
+
+1. Crea un proyecto en [supabase.com](https://supabase.com)
+2. Ve a **SQL Editor** → **New Query**
+3. Primero limpia (si hay tablas viejas):
+   ```sql
+   drop table if exists public.reminders cascade;
+   drop table if exists public.tasks cascade;
+   drop table if exists public.guests cascade;
+   drop table if exists public.events cascade;
+   drop table if exists public.users cascade;
+   ```
+4. Pega el contenido de `supabase.sql` → **Run**
+5. Copia la **URL** y **Service Role Key**
+
+### 2. Railway (Backend)
+
+1. Ve a [railway.app](https://railway.app) → **New Project**
+2. **Deploy from GitHub repo** → selecciona `lemichiw-cyber/defensa-uwu`
+3. En **Settings**:
+   - **Root Directory:** `server`
+   - **Start Command:** `npm start`
+4. En **Variables**:
+   - `SUPABASE_URL` → tu URL de Supabase
+   - `SUPABASE_SERVICE_ROLE_KEY` → tu service role key
+   - `JWT_SECRET` → genera con `openssl rand -base64 32`
+   - `ENCRYPTION_KEY` → genera con `openssl rand -base64 32`
+5. Copia la URL del deploy (ej: `https://mievento-api.up.railway.app`)
+
+### 3. GitHub Pages (Frontend)
+
+1. En el repo → **Settings** → **Pages**
+2. **Source:** Deploy from a branch
+3. **Branch:** `master` → `/public` folder
+4. Click **Save**
+5. Espera 2-3 minutos
+
+### 4. Conectar Frontend con Backend
+
+Edita `public/js/utils.js`:
+```js
+const API_BASE = "https://tu-url-de-railway.app/api";
+```
+
+Haz commit y push. GitHub Pages se actualiza automáticamente.
 
 ---
 
-## 🗄️ Base de Datos (Supabase)
+## 🔐 Seguridad
 
-El archivo **`supabase.sql`** contiene todo lo necesario:
+| Campo | Método |
+|-------|--------|
+| `name_enc`, `email_enc` | AES-256-GCM |
+| `title_enc`, `description_enc` | AES-256-GCM |
+| `location_enc`, `message_enc` | AES-256-GCM |
+| `email_hash` | SHA-256 (para login) |
+| `password_hash` | scrypt |
+| `date`, `status`, `image_url` | Sin cifrar (filtros) |
 
-- **Tablas**: `users`, `events`, `guests`, `tasks`, `reminders`
-- **RLS (Row Level Security)**: políticas de seguridad por rol
-- **Índices**: optimización de consultas
-- **Trigger**: `updated_at` automático
-- **Seed data**: usuarios y eventos de demostración
-
-### Diagrama Entidad-Relación
-```
-users (1) ──< events (1) ──< guests
-                     ├──< tasks
-                     └──< reminders
-```
+La clave de encriptación **nunca** sale del backend.
 
 ---
 
-## 🔐 API REST
-
-| Método | Endpoint | Acceso |
-|--------|----------|--------|
-| POST | `/api/auth/register` | público |
-| POST | `/api/auth/login` | público |
-| GET | `/api/auth/me` | usuario |
-| GET/POST | `/api/events` | usuario |
-| GET/PATCH/DELETE | `/api/events/:id` | dueño / admin |
-| CRUD | `/api/events/:id/guests` | dueño / admin |
-| CRUD | `/api/events/:id/tasks` | dueño / admin |
-| CRUD | `/api/events/:id/reminders` | dueño / admin |
-| GET | `/api/stats` | usuario |
-| GET | `/api/admin/users` | admin |
-| GET | `/api/admin/overview` | admin |
-| PATCH | `/api/admin/users/:id/role` | admin |
-
----
-
-## 📁 Estructura del Proyecto
+## 📁 Estructura
 
 ```
-├── public/
-│   ├── css/styles.css      # Design system completo
+├── public/               # Frontend (GitHub Pages)
+│   ├── css/styles.css
 │   ├── js/
-│   │   ├── app.js          # Frontend SPA vanilla
-│   │   └── utils.js        # API client, router, DOM helpers
-│   ├── index.html          # Entry point
-│   └── favicon.svg
-├── server/
-│   └── index.js            # API Express + Supabase
-├── supabase.sql            # Schema + RLS + seed
-├── package.json
-├── Dockerfile
-└── docker-compose.yml
+│   │   ├── app.js
+│   │   └── utils.js      # ← Cambia API_BASE aquí
+│   └── index.html
+├── server/               # Backend (Railway)
+│   ├── index.js
+│   └── package.json
+├── supabase.sql          # Schema + RLS
+└── README.md
 ```
-
----
-
-## 🛡️ Seguridad
-
-- **JWT** con expiración de 7 días
-- **scrypt** password hashing (salt + hash)
-- **Rate limiting**: 20 intentos/auth por IP / 15 min
-- **Helmet** headers (CSP desactivado para la SPA)
-- **RLS** en Supabase: usuarios solo ven sus propios datos
-- **Zod** validación de inputs en todas las rutas
 
 ---
 
 ## 📄 Licencia
 
-MIT License — libre uso y modificación.
+MIT

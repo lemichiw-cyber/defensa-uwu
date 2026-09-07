@@ -1,10 +1,5 @@
-// ============================================================
-// MiEvento Frontend — TypeScript-style JS (ES Modules)
-// ============================================================
+const API_BASE = "https://mievento-api.up.railway.app/api";
 
-const API_BASE = "/api";
-
-// ── API Client ─────────────────────────────────────────────
 export async function apiRequest(path, options = {}) {
   const headers = {
     "Content-Type": "application/json",
@@ -33,7 +28,6 @@ export const api = {
   delete: (path) => apiRequest(path, { method: "DELETE" }),
 };
 
-// ── Auth ───────────────────────────────────────────────────
 export const auth = {
   getToken: () => localStorage.getItem("mievento_token"),
   setToken: (t) => localStorage.setItem("mievento_token", t),
@@ -62,7 +56,6 @@ export const auth = {
   },
 };
 
-// ── Toast ──────────────────────────────────────────────────
 export function toast(message, variant = "info") {
   const container = document.getElementById("toast-container");
   if (!container) return;
@@ -81,7 +74,6 @@ export function toast(message, variant = "info") {
   }, 3500);
 }
 
-// ── Splash ─────────────────────────────────────────────────
 export function showSplash() {
   document.getElementById("splash")?.classList.remove("hidden");
 }
@@ -90,7 +82,6 @@ export function hideSplash() {
   document.getElementById("splash")?.classList.add("hidden");
 }
 
-// ── Router ─────────────────────────────────────────────────
 let currentRoute = null;
 
 export function navigate(route) {
@@ -98,7 +89,6 @@ export function navigate(route) {
   window.dispatchEvent(new CustomEvent("route-change", { detail: route }));
 }
 
-// ── DOM helpers ────────────────────────────────────────────
 export function h(tag, attrs = {}, children = []) {
   const el = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
@@ -134,7 +124,6 @@ export function formatTime(timeStr) {
   return timeStr;
 }
 
-// ── Modal ──────────────────────────────────────────────────
 export function openModal(title, content, footer) {
   const overlay = h("div", { class: "modal-overlay" }, [
     h("div", { class: "modal" }, [

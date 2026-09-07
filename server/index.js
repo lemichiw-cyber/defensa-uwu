@@ -6,14 +6,11 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import crypto from "node:crypto";
 import { SignJWT, jwtVerify } from "jose";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import WebSocket from "ws";
 
 // Polyfill WebSocket for Node.js < 22
 globalThis.WebSocket = WebSocket;
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT ?? 3001;
 
@@ -108,7 +105,7 @@ function verifyPassword(password, stored) {
 
 // ── Middleware ─────────────────────────────────────────────
 app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors());
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 const limiterAuth = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, standardHeaders: true, legacyHeaders: false });
@@ -128,13 +125,8 @@ async function requireAuth(req, res, next) {
 }
 
 async function requireAdmin(req, res, next) {
-  const { data: user } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", req.userId)
-    .single();
-  if (!user || user.role !== "admin")
-    return res.status(403).json({ error: "Acceso denegado." });
+  const { data: user } = await supabase.from("users").select("role").eq("id", req.userId).single();
+  if (!user || user.role !== "admin") return res.status(403).json({ error: "Acceso denegado." });
   next();
 }
 
@@ -167,12 +159,7 @@ app.post("/api/auth/register", async (req, res) => {
   const { name, email, password } = parsed.data;
 
   const emailHash = hashEmail(email);
-  const { data: existing } = await supabase
-    .from("users")
-    .select("id")
-    .eq("email_hash", emailHash)
-    .single();
-
+  const { data: existing } = await supabase.from("users").select("id").eq("email_hash", emailHash).single();
   if (existing) return res.status(409).json({ error: "Ese correo ya está registrado." });
 
   const { data: newUser, error } = await supabase
@@ -190,10 +177,7 @@ app.post("/api/auth/register", async (req, res) => {
   if (error) return res.status(500).json({ error: "Error al crear usuario." });
 
   const token = await signToken({ sub: newUser.id });
-  res.status(201).json({
-    token,
-    user: { id: newUser.id, name, email: email.toLowerCase(), role: newUser.role }
-  });
+  res.status(201).json({ token, user: { id: newUser.id, name, email: email.toLowerCase(), role: newUser.role } });
 });
 
 app.post("/api/auth/login", async (req, res) => {
@@ -214,30 +198,14 @@ app.post("/api/auth/login", async (req, res) => {
   const token = await signToken({ sub: user.id });
   res.json({
     token,
-    user: {
-      id: user.id,
-      name: decrypt(user.name_enc),
-      email: decrypt(user.email_enc),
-      role: user.role
-    }
+    user: { id: user.id, name: decrypt(user.name_enc), email: decrypt(user.email_enc), role: user.role }
   });
 });
 
 app.get("/api/auth/me", requireAuth, async (req, res) => {
-  const { data: user } = await supabase
-    .from("users")
-    .select("id, name_enc, email_enc, role")
-    .eq("id", req.userId)
-    .single();
+  const { data: user } = await supabase.from("users").select("id, name_enc, email_enc, role").eq("id", req.userId).single();
   if (!user) return res.status(404).json({ error: "Usuario no encontrado." });
-  res.json({
-    user: {
-      id: user.id,
-      name: decrypt(user.name_enc),
-      email: decrypt(user.email_enc),
-      role: user.role
-    }
-  });
+  res.json({ user: { id: user.id, name: decrypt(user.name_enc), email: decrypt(user.email_enc), role: user.role } });
 });
 
 // ── Events routes ─────────────────────────────────────────
@@ -255,12 +223,7 @@ const updateEventSchema = createEventSchema.partial();
 
 app.get("/api/events", requireAuth, async (req, res) => {
   const { status, q, limit } = req.query;
-  let query = supabase
-    .from("events")
-    .select("*")
-    .eq("user_id", req.userId)
-    .order("date", { ascending: true });
-
+  let query = supabase.from("events").select("*").eq("user_id", req.userId).order("date", { ascending: true });
   if (status && typeof status === "string") query = query.eq("status", status);
   if (limit && !isNaN(Number(limit))) query = query.limit(Number(limit));
 
@@ -268,52 +231,23 @@ app.get("/api/events", requireAuth, async (req, res) => {
   if (error) return res.status(500).json({ error: "Error al obtener eventos." });
 
   const events = data.map(ev => ({
-    id: ev.id,
-    userId: ev.user_id,
-    title: decrypt(ev.title_enc),
-    description: decrypt(ev.description_enc),
-    date: ev.date,
-    time: ev.time,
-    location: decrypt(ev.location_enc),
-    image: ev.image_url,
-    status: ev.status,
-    createdAt: ev.created_at
+    id: ev.id, userId: ev.user_id, title: decrypt(ev.title_enc), description: decrypt(ev.description_enc),
+    date: ev.date, time: ev.time, location: decrypt(ev.location_enc), image: ev.image_url, status: ev.status, createdAt: ev.created_at
   }));
 
   let filtered = events;
   if (q && typeof q === "string") {
     const search = q.toLowerCase();
-    filtered = events.filter(ev =>
-      ev.title?.toLowerCase().includes(search) ||
-      ev.location?.toLowerCase().includes(search)
-    );
+    filtered = events.filter(ev => ev.title?.toLowerCase().includes(search) || ev.location?.toLowerCase().includes(search));
   }
 
   res.json({ events: filtered });
 });
 
 app.get("/api/events/:id", requireAuth, async (req, res) => {
-  const { data, error } = await supabase
-    .from("events")
-    .select("*")
-    .eq("id", req.params.id)
-    .eq("user_id", req.userId)
-    .single();
+  const { data, error } = await supabase.from("events").select("*").eq("id", req.params.id).eq("user_id", req.userId).single();
   if (error || !data) return res.status(404).json({ error: "Evento no encontrado." });
-  res.json({
-    event: {
-      id: data.id,
-      userId: data.user_id,
-      title: decrypt(data.title_enc),
-      description: decrypt(data.description_enc),
-      date: data.date,
-      time: data.time,
-      location: decrypt(data.location_enc),
-      image: data.image_url,
-      status: data.status,
-      createdAt: data.created_at
-    }
-  });
+  res.json({ event: { id: data.id, userId: data.user_id, title: decrypt(data.title_enc), description: decrypt(data.description_enc), date: data.date, time: data.time, location: decrypt(data.location_enc), image: data.image_url, status: data.status, createdAt: data.created_at } });
 });
 
 app.post("/api/events", requireAuth, async (req, res) => {
@@ -321,36 +255,12 @@ app.post("/api/events", requireAuth, async (req, res) => {
   if (!parsed.success) return res.status(400).json({ error: zodMessage(parsed) });
   const { title, description, date, time, location, image_url, status } = parsed.data;
 
-  const { data, error } = await supabase
-    .from("events")
-    .insert({
-      title_enc: encrypt(title),
-      description_enc: encrypt(description),
-      date,
-      time,
-      location_enc: encrypt(location),
-      image_url,
-      status,
-      user_id: req.userId
-    })
-    .select()
-    .single();
+  const { data, error } = await supabase.from("events").insert({
+    title_enc: encrypt(title), description_enc: encrypt(description), date, time, location_enc: encrypt(location), image_url, status, user_id: req.userId
+  }).select().single();
 
   if (error) return res.status(500).json({ error: "Error al crear evento." });
-  res.status(201).json({
-    event: {
-      id: data.id,
-      userId: data.user_id,
-      title,
-      description,
-      date: data.date,
-      time: data.time,
-      location,
-      image: data.image_url,
-      status: data.status,
-      createdAt: data.created_at
-    }
-  });
+  res.status(201).json({ event: { id: data.id, userId: data.user_id, title, description, date: data.date, time: data.time, location, image: data.image_url, status: data.status, createdAt: data.created_at } });
 });
 
 app.patch("/api/events/:id", requireAuth, async (req, res) => {
@@ -366,163 +276,67 @@ app.patch("/api/events/:id", requireAuth, async (req, res) => {
   if (parsed.data.image_url !== undefined) updateData.image_url = parsed.data.image_url;
   if (parsed.data.status !== undefined) updateData.status = parsed.data.status;
 
-  const { data, error } = await supabase
-    .from("events")
-    .update(updateData)
-    .eq("id", req.params.id)
-    .eq("user_id", req.userId)
-    .select()
-    .single();
-
+  const { data, error } = await supabase.from("events").update(updateData).eq("id", req.params.id).eq("user_id", req.userId).select().single();
   if (error || !data) return res.status(404).json({ error: "Evento no encontrado." });
-  res.json({
-    event: {
-      id: data.id,
-      userId: data.user_id,
-      title: decrypt(data.title_enc),
-      description: decrypt(data.description_enc),
-      date: data.date,
-      time: data.time,
-      location: decrypt(data.location_enc),
-      image: data.image_url,
-      status: data.status,
-      createdAt: data.created_at
-    }
-  });
+  res.json({ event: { id: data.id, userId: data.user_id, title: decrypt(data.title_enc), description: decrypt(data.description_enc), date: data.date, time: data.time, location: decrypt(data.location_enc), image: data.image_url, status: data.status, createdAt: data.created_at } });
 });
 
 app.delete("/api/events/:id", requireAuth, async (req, res) => {
-  const { error } = await supabase
-    .from("events")
-    .delete()
-    .eq("id", req.params.id)
-    .eq("user_id", req.userId);
+  const { error } = await supabase.from("events").delete().eq("id", req.params.id).eq("user_id", req.userId);
   if (error) return res.status(500).json({ error: "Error al eliminar." });
   res.status(204).end();
 });
 
 // ── Guests routes ─────────────────────────────────────────
 app.get("/api/events/:eventId/guests", requireAuth, async (req, res) => {
-  const { data, error } = await supabase
-    .from("guests")
-    .select("*")
-    .eq("event_id", req.params.eventId);
+  const { data, error } = await supabase.from("guests").select("*").eq("event_id", req.params.eventId);
   if (error) return res.status(500).json({ error: "Error al obtener invitados." });
-  res.json({
-    guests: data.map(g => ({
-      id: g.id,
-      eventId: g.event_id,
-      name: decrypt(g.name_enc),
-      email: decrypt(g.email_enc),
-      rsvp: g.rsvp,
-      createdAt: g.created_at
-    }))
-  });
+  res.json({ guests: data.map(g => ({ id: g.id, eventId: g.event_id, name: decrypt(g.name_enc), email: decrypt(g.email_enc), rsvp: g.rsvp, createdAt: g.created_at })) });
 });
 
 app.post("/api/events/:eventId/guests", requireAuth, async (req, res) => {
-  const schema = z.object({
-    name: z.string().min(2),
-    email: z.string().email(),
-    rsvp: z.enum(["pendiente", "confirmado", "rechazado"]).optional(),
-  });
+  const schema = z.object({ name: z.string().min(2), email: z.string().email(), rsvp: z.enum(["pendiente", "confirmado", "rechazado"]).optional() });
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: zodMessage(parsed) });
   const { name, email, rsvp } = parsed.data;
 
-  const { data, error } = await supabase
-    .from("guests")
-    .insert({
-      name_enc: encrypt(name),
-      email_enc: encrypt(email.toLowerCase()),
-      rsvp: rsvp || "pendiente",
-      event_id: req.params.eventId
-    })
-    .select()
-    .single();
+  const { data, error } = await supabase.from("guests").insert({
+    name_enc: encrypt(name), email_enc: encrypt(email.toLowerCase()), rsvp: rsvp || "pendiente", event_id: req.params.eventId
+  }).select().single();
 
   if (error) return res.status(500).json({ error: "Error al crear invitado." });
-  res.status(201).json({
-    guest: {
-      id: data.id,
-      eventId: data.event_id,
-      name,
-      email,
-      rsvp: data.rsvp,
-      createdAt: data.created_at
-    }
-  });
+  res.status(201).json({ guest: { id: data.id, eventId: data.event_id, name, email, rsvp: data.rsvp, createdAt: data.created_at } });
 });
 
 app.delete("/api/events/:eventId/guests/:guestId", requireAuth, async (req, res) => {
-  const { error } = await supabase
-    .from("guests")
-    .delete()
-    .eq("id", req.params.guestId)
-    .eq("event_id", req.params.eventId);
+  const { error } = await supabase.from("guests").delete().eq("id", req.params.guestId).eq("event_id", req.params.eventId);
   if (error) return res.status(500).json({ error: "Error al eliminar." });
   res.status(204).end();
 });
 
 // ── Tasks routes ──────────────────────────────────────────
 app.get("/api/events/:eventId/tasks", requireAuth, async (req, res) => {
-  const { data, error } = await supabase
-    .from("tasks")
-    .select("*")
-    .eq("event_id", req.params.eventId);
+  const { data, error } = await supabase.from("tasks").select("*").eq("event_id", req.params.eventId);
   if (error) return res.status(500).json({ error: "Error al obtener tareas." });
-  res.json({
-    tasks: data.map(t => ({
-      id: t.id,
-      eventId: t.event_id,
-      title: decrypt(t.title_enc),
-      done: t.done,
-      dueDate: t.due_date,
-      createdAt: t.created_at
-    }))
-  });
+  res.json({ tasks: data.map(t => ({ id: t.id, eventId: t.event_id, title: decrypt(t.title_enc), done: t.done, dueDate: t.due_date, createdAt: t.created_at })) });
 });
 
 app.post("/api/events/:eventId/tasks", requireAuth, async (req, res) => {
-  const schema = z.object({
-    title: z.string().min(2),
-    done: z.boolean().optional(),
-    due_date: z.string().optional().nullable(),
-  });
+  const schema = z.object({ title: z.string().min(2), done: z.boolean().optional(), due_date: z.string().optional().nullable() });
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: zodMessage(parsed) });
   const { title, done, due_date } = parsed.data;
 
-  const { data, error } = await supabase
-    .from("tasks")
-    .insert({
-      title_enc: encrypt(title),
-      done: done || false,
-      due_date: due_date || null,
-      event_id: req.params.eventId
-    })
-    .select()
-    .single();
+  const { data, error } = await supabase.from("tasks").insert({
+    title_enc: encrypt(title), done: done || false, due_date: due_date || null, event_id: req.params.eventId
+  }).select().single();
 
   if (error) return res.status(500).json({ error: "Error al crear tarea." });
-  res.status(201).json({
-    task: {
-      id: data.id,
-      eventId: data.event_id,
-      title,
-      done: data.done,
-      dueDate: data.due_date,
-      createdAt: data.created_at
-    }
-  });
+  res.status(201).json({ task: { id: data.id, eventId: data.event_id, title, done: data.done, dueDate: data.due_date, createdAt: data.created_at } });
 });
 
 app.patch("/api/events/:eventId/tasks/:taskId", requireAuth, async (req, res) => {
-  const schema = z.object({
-    title: z.string().optional(),
-    done: z.boolean().optional(),
-    due_date: z.string().optional().nullable(),
-  });
+  const schema = z.object({ title: z.string().optional(), done: z.boolean().optional(), due_date: z.string().optional().nullable() });
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: zodMessage(parsed) });
 
@@ -531,115 +345,51 @@ app.patch("/api/events/:eventId/tasks/:taskId", requireAuth, async (req, res) =>
   if (parsed.data.done !== undefined) updateData.done = parsed.data.done;
   if (parsed.data.due_date !== undefined) updateData.due_date = parsed.data.due_date;
 
-  const { data, error } = await supabase
-    .from("tasks")
-    .update(updateData)
-    .eq("id", req.params.taskId)
-    .eq("event_id", req.params.eventId)
-    .select()
-    .single();
-
+  const { data, error } = await supabase.from("tasks").update(updateData).eq("id", req.params.taskId).eq("event_id", req.params.eventId).select().single();
   if (error) return res.status(500).json({ error: "Error al actualizar." });
-  res.json({
-    task: {
-      id: data.id,
-      eventId: data.event_id,
-      title: decrypt(data.title_enc),
-      done: data.done,
-      dueDate: data.due_date,
-      createdAt: data.created_at
-    }
-  });
+  res.json({ task: { id: data.id, eventId: data.event_id, title: decrypt(data.title_enc), done: data.done, dueDate: data.due_date, createdAt: data.created_at } });
 });
 
 app.delete("/api/events/:eventId/tasks/:taskId", requireAuth, async (req, res) => {
-  const { error } = await supabase
-    .from("tasks")
-    .delete()
-    .eq("id", req.params.taskId)
-    .eq("event_id", req.params.eventId);
+  const { error } = await supabase.from("tasks").delete().eq("id", req.params.taskId).eq("event_id", req.params.eventId);
   if (error) return res.status(500).json({ error: "Error al eliminar." });
   res.status(204).end();
 });
 
 // ── Reminders routes ──────────────────────────────────────
 app.get("/api/events/:eventId/reminders", requireAuth, async (req, res) => {
-  const { data, error } = await supabase
-    .from("reminders")
-    .select("*")
-    .eq("event_id", req.params.eventId);
+  const { data, error } = await supabase.from("reminders").select("*").eq("event_id", req.params.eventId);
   if (error) return res.status(500).json({ error: "Error al obtener recordatorios." });
-  res.json({
-    reminders: data.map(r => ({
-      id: r.id,
-      eventId: r.event_id,
-      message: decrypt(r.message_enc),
-      remindAt: r.remind_at,
-      sent: r.sent,
-      createdAt: r.created_at
-    }))
-  });
+  res.json({ reminders: data.map(r => ({ id: r.id, eventId: r.event_id, message: decrypt(r.message_enc), remindAt: r.remind_at, sent: r.sent, createdAt: r.created_at })) });
 });
 
 app.post("/api/events/:eventId/reminders", requireAuth, async (req, res) => {
-  const schema = z.object({
-    message: z.string().min(2),
-    remind_at: z.string(),
-  });
+  const schema = z.object({ message: z.string().min(2), remind_at: z.string() });
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: zodMessage(parsed) });
   const { message, remind_at } = parsed.data;
 
-  const { data, error } = await supabase
-    .from("reminders")
-    .insert({
-      message_enc: encrypt(message),
-      remind_at,
-      event_id: req.params.eventId
-    })
-    .select()
-    .single();
+  const { data, error } = await supabase.from("reminders").insert({
+    message_enc: encrypt(message), remind_at, event_id: req.params.eventId
+  }).select().single();
 
   if (error) return res.status(500).json({ error: "Error al crear recordatorio." });
-  res.status(201).json({
-    reminder: {
-      id: data.id,
-      eventId: data.event_id,
-      message,
-      remindAt: data.remind_at,
-      sent: data.sent,
-      createdAt: data.created_at
-    }
-  });
+  res.status(201).json({ reminder: { id: data.id, eventId: data.event_id, message, remindAt: data.remind_at, sent: data.sent, createdAt: data.created_at } });
 });
 
 app.delete("/api/events/:eventId/reminders/:reminderId", requireAuth, async (req, res) => {
-  const { error } = await supabase
-    .from("reminders")
-    .delete()
-    .eq("id", req.params.reminderId)
-    .eq("event_id", req.params.eventId);
+  const { error } = await supabase.from("reminders").delete().eq("id", req.params.reminderId).eq("event_id", req.params.eventId);
   if (error) return res.status(500).json({ error: "Error al eliminar." });
   res.status(204).end();
 });
 
 // ── Stats ─────────────────────────────────────────────────
 app.get("/api/stats", requireAuth, async (req, res) => {
-  const { count: events } = await supabase
-    .from("events")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", req.userId);
+  const { count: events } = await supabase.from("events").select("*", { count: "exact", head: true }).eq("user_id", req.userId);
   const userEvents = await supabase.from("events").select("id").eq("user_id", req.userId);
   const eventIds = userEvents.data?.map(e => e.id) ?? [];
-  const { count: guests } = await supabase
-    .from("guests")
-    .select("*", { count: "exact", head: true })
-    .in("event_id", eventIds.length > 0 ? eventIds : ["00000000-0000-0000-0000-000000000000"]);
-  const { count: reminders } = await supabase
-    .from("reminders")
-    .select("*", { count: "exact", head: true })
-    .eq("sent", false)
-    .in("event_id", eventIds.length > 0 ? eventIds : ["00000000-0000-0000-0000-000000000000"]);
+  const { count: guests } = await supabase.from("guests").select("*", { count: "exact", head: true }).in("event_id", eventIds.length > 0 ? eventIds : ["00000000-0000-0000-0000-000000000000"]);
+  const { count: reminders } = await supabase.from("reminders").select("*", { count: "exact", head: true }).eq("sent", false).in("event_id", eventIds.length > 0 ? eventIds : ["00000000-0000-0000-0000-000000000000"]);
   res.json({ events: events ?? 0, guests: guests ?? 0, reminders: reminders ?? 0 });
 });
 
@@ -647,15 +397,7 @@ app.get("/api/stats", requireAuth, async (req, res) => {
 app.get("/api/admin/users", requireAuth, requireAdmin, async (_req, res) => {
   const { data, error } = await supabase.from("users").select("id, name_enc, email_enc, role, created_at");
   if (error) return res.status(500).json({ error: "Error al obtener usuarios." });
-  res.json({
-    users: data.map(u => ({
-      id: u.id,
-      name: decrypt(u.name_enc),
-      email: decrypt(u.email_enc),
-      role: u.role,
-      created_at: u.created_at
-    }))
-  });
+  res.json({ users: data.map(u => ({ id: u.id, name: decrypt(u.name_enc), email: decrypt(u.email_enc), role: u.role, created_at: u.created_at })) });
 });
 
 app.get("/api/admin/overview", requireAuth, requireAdmin, async (_req, res) => {
@@ -673,33 +415,14 @@ app.patch("/api/admin/users/:id/role", requireAuth, requireAdmin, async (req, re
   const schema = z.object({ role: z.enum(["usuario", "admin"]) });
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: zodMessage(parsed) });
-  const { data, error } = await supabase
-    .from("users")
-    .update({ role: parsed.data.role })
-    .eq("id", req.params.id)
-    .select("id, name_enc, email_enc, role")
-    .single();
+  const { data, error } = await supabase.from("users").update({ role: parsed.data.role }).eq("id", req.params.id).select("id, name_enc, email_enc, role").single();
   if (error) return res.status(500).json({ error: "Error al actualizar rol." });
-  res.json({
-    user: {
-      id: data.id,
-      name: decrypt(data.name_enc),
-      email: decrypt(data.email_enc),
-      role: data.role
-    }
-  });
+  res.json({ user: { id: data.id, name: decrypt(data.name_enc), email: decrypt(data.email_enc), role: data.role } });
 });
 
 // ── 404 ───────────────────────────────────────────────────
 app.use("/api", (_req, res) => {
   res.status(404).json({ error: "Ruta no encontrada." });
-});
-
-// ── Static files ─────────────────────────────────────────
-app.use(express.static(path.resolve(__dirname, "..", "public")));
-
-app.get("*", (_req, res) => {
-  res.sendFile(path.resolve(__dirname, "..", "public", "index.html"));
 });
 
 // ── Error handler ─────────────────────────────────────────

@@ -1,5 +1,7 @@
 // ============================================================
 // MiEvento Frontend — Main Application (ES Module)
+// Deploy: GitHub Pages
+// API: Railway (backend with AES-256-GCM encryption)
 // ============================================================
 
 import { auth, api, toast, showSplash, hideSplash, navigate, h, qs, clear, formatDate, formatTime, openModal } from "/js/utils.js";
@@ -18,7 +20,6 @@ document.addEventListener("DOMContentLoaded", init);
 async function init() {
   showSplash();
 
-  // Check existing session
   if (auth.getToken()) {
     try {
       state.user = await auth.me();
@@ -29,7 +30,6 @@ async function init() {
     }
   }
 
-  // Listen for route changes
   window.addEventListener("route-change", (e) => {
     state.view = e.detail;
     render();
@@ -62,10 +62,7 @@ function renderLanding() {
       h("h1", {}, "¡Que onda peblada!"),
       h("p", {}, "Plataforma educativa institucional para gestionar actividades académicas, exámenes, foros y más. Todo en un solo lugar."),
       h("div", { class: "hero-buttons" }, [
-        h("button", {
-          class: "btn btn-primary",
-          onclick: () => navigate("dashboard"),
-        }, "Comenzar Ahora"),
+        h("button", { class: "btn btn-primary", onclick: () => navigate("dashboard") }, "Comenzar Ahora"),
         h("a", { class: "btn btn-outline", href: "#portfolio" }, "Ver Portafolio"),
       ]),
     ]),
@@ -78,17 +75,17 @@ function renderLanding() {
       h("div", { class: "service-card" }, [
         h("div", { class: "service-icon" }, "🎓"),
         h("h3", {}, "Para estudiantes"),
-        h("p", {}, "Gestiona tus tareas, exámenes y calificaciones. Accede a recursos educativos y mantente al día con tu agenda académica."),
+        h("p", {}, "Gestiona tus tareas, exámenes y calificaciones."),
       ]),
       h("div", { class: "service-card" }, [
         h("div", { class: "service-icon" }, "⚙️"),
         h("h3", {}, "Servicios"),
-        h("p", {}, "Plataforma integral con foros de discusión, mensajería interna, clases en línea y actividades grupales colaborativas."),
+        h("p", {}, "Plataforma integral con foros, mensajería y clases en línea."),
       ]),
       h("div", { class: "service-card" }, [
         h("div", { class: "service-icon" }, "🎨"),
         h("h3", {}, "Diseño"),
-        h("p", {}, "Interfaz moderna y responsiva diseñada para ofrecer la mejor experiencia de usuario en cualquier dispositivo."),
+        h("p", {}, "Interfaz moderna y responsiva."),
       ]),
     ]),
   ]);
@@ -115,18 +112,15 @@ function renderLanding() {
 
   const ctaSection = h("section", { class: "cta-section" }, [
     h("h2", {}, "¿Listo para comenzar?"),
-    h("p", {}, "Accede ahora a la plataforma educativa y descubre todas las funcionalidades disponibles para ti."),
-    h("button", {
-      class: "btn btn-primary",
-      onclick: () => navigate("dashboard"),
-    }, "Ir a la Plataforma"),
+    h("p", {}, "Accede ahora a la plataforma educativa."),
+    h("button", { class: "btn btn-primary", onclick: () => navigate("dashboard") }, "Ir a la Plataforma"),
   ]);
 
   const footer = h("footer", { class: "footer" }, [
     h("div", { class: "footer-grid" }, [
       h("div", {}, [
         h("h4", {}, "Plataforma Educativa"),
-        h("p", {}, "Plataforma educativa institucional diseñada para mejorar la experiencia de aprendizaje de estudiantes y docentes."),
+        h("p", {}, "Plataforma educativa institucional diseñada para mejorar la experiencia de aprendizaje."),
       ]),
       h("div", {}, [
         h("h4", {}, "Acceso"),
@@ -155,10 +149,7 @@ function statItem(value, label) {
 }
 
 function portfolioCard(title, subtitle, imgUrl) {
-  return h("div", {
-    class: "portfolio-card",
-    onclick: () => navigate("dashboard"),
-  }, [
+  return h("div", { class: "portfolio-card", onclick: () => navigate("dashboard") }, [
     h("img", { src: imgUrl, alt: title, loading: "lazy" }),
     h("div", { class: "portfolio-overlay" }, [
       h("h3", {}, title),
@@ -186,22 +177,11 @@ function renderAuth() {
     h("input", { class: "form-input", id: "auth-name", placeholder: "Tu nombre", autocomplete: "name" }),
   ]);
 
-  const tabLogin = h("button", {
-    class: "auth-tab active",
-    onclick: () => switchTab("login"),
-  }, "Entrar");
-
-  const tabRegister = h("button", {
-    class: "auth-tab",
-    onclick: () => switchTab("register"),
-  }, "Registrarse");
-
+  const tabLogin = h("button", { class: "auth-tab active", onclick: () => switchTab("login") }, "Entrar");
+  const tabRegister = h("button", { class: "auth-tab", onclick: () => switchTab("register") }, "Registrarse");
   const errorMsg = h("div", { class: "form-error hidden", id: "auth-error" });
 
-  const submitBtn = h("button", {
-    class: "btn btn-primary btn-full btn-lg",
-    type: "submit",
-  }, "Iniciar sesión");
+  const submitBtn = h("button", { class: "btn btn-primary btn-full btn-lg", type: "submit" }, "Iniciar sesión");
 
   const form = h("form", {
     onsubmit: async (e) => {
@@ -248,7 +228,7 @@ function renderAuth() {
         h("div", {}, [
           h("div", { class: "logo" }, "M"),
           h("h2", {}, "Bienvenido a la Plataforma"),
-          h("p", {}, "Gestiona actividades, exámenes, foros y clases en línea. Todo en un solo lugar."),
+          h("p", {}, "Gestiona actividades, exámenes, foros y clases en línea."),
           h("ul", { class: "features" }, [
             h("li", {}, "Actividades y agenda"),
             h("li", {}, "Foro estudiantil"),
@@ -264,10 +244,7 @@ function renderAuth() {
         h("div", { class: "auth-tabs" }, [tabLogin, tabRegister]),
         form,
         h("div", { class: "text-center mt-4" }, [
-          h("button", {
-            class: "text-sm text-blue-600 font-semibold hover:underline",
-            onclick: fillDemo,
-          }, "Usar cuenta demo"),
+          h("button", { class: "text-sm text-blue-600 font-semibold hover:underline", onclick: fillDemo }, "Usar cuenta demo"),
           h("p", { class: "text-xs text-gray-500 mt-2" }, [
             "Admin: maria@mievento.com / demo1234 · ",
             h("br", {}, null),
@@ -295,10 +272,7 @@ function renderDashboard() {
       h("div", { class: "mb-6" }, [
         h("div", { class: "flex justify-between items-center mb-4" }, [
           h("h2", { class: "text-lg font-bold" }, "Próximos eventos"),
-          h("button", {
-            class: "btn btn-primary",
-            onclick: () => openNewEventModal(),
-          }, "+ Nuevo Evento"),
+          h("button", { class: "btn btn-primary", onclick: () => openNewEventModal() }, "+ Nuevo Evento"),
         ]),
         h("div", { class: "events-list", id: "events-list" }),
       ]),
@@ -309,7 +283,6 @@ function renderDashboard() {
   container.appendChild(header);
   container.appendChild(layout);
 
-  // Load events
   loadEvents();
 
   return container;
@@ -328,10 +301,7 @@ function renderHeader() {
     ]),
     h("div", { class: "header-actions" }, [
       h("span", { class: "text-sm text-gray-600" }, state.user?.name || ""),
-      h("button", {
-        class: "btn btn-sm btn-outline",
-        onclick: () => { auth.logout(); navigate("landing"); },
-      }, "Cerrar sesión"),
+      h("button", { class: "btn btn-sm btn-outline", onclick: () => { auth.logout(); navigate("landing"); } }, "Cerrar sesión"),
     ]),
   ]);
 }
@@ -348,10 +318,7 @@ function renderSidebar() {
     sidebarItem("usuarios", "👤", "Usuarios"),
     sidebarItem("configuracion", "⚙️", "Configuración"),
     h("div", { class: "sidebar-footer" }, [
-      h("button", {
-        class: "btn btn-sm btn-ghost w-full",
-        onclick: () => { auth.logout(); navigate("landing"); },
-      }, "🚪 Cerrar sesión"),
+      h("button", { class: "btn btn-sm btn-ghost w-full", onclick: () => { auth.logout(); navigate("landing"); } }, "🚪 Cerrar sesión"),
     ]),
   ]);
 }
@@ -399,7 +366,7 @@ function renderEventsList(events) {
 
   events.forEach((ev) => {
     list.appendChild(h("div", { class: "event-card" }, [
-      h("img", { class: "event-image", src: ev.image_url || "", alt: ev.title, onerror: "this.style.display='none'" }),
+      h("img", { class: "event-image", src: ev.image || "", alt: ev.title, onerror: "this.style.display='none'" }),
       h("div", { class: "event-info" }, [
         h("div", { class: "event-title" }, ev.title),
         h("div", { class: "event-meta" }, [
@@ -410,14 +377,8 @@ function renderEventsList(events) {
         ]),
       ]),
       h("div", { class: "event-actions" }, [
-        h("button", {
-          class: "btn btn-sm btn-outline",
-          onclick: () => openEditEventModal(ev),
-        }, "Editar"),
-        h("button", {
-          class: "btn btn-sm btn-danger",
-          onclick: () => deleteEvent(ev.id),
-        }, "Eliminar"),
+        h("button", { class: "btn btn-sm btn-outline", onclick: () => openEditEventModal(ev) }, "Editar"),
+        h("button", { class: "btn btn-sm btn-danger", onclick: () => deleteEvent(ev.id) }, "Eliminar"),
       ]),
     ]));
   });
@@ -493,7 +454,7 @@ function openEditEventModal(ev) {
       formGroup("Hora", h("input", { class: "form-input", name: "time", type: "time", value: ev.time, required: "true" })),
     ]),
     formGroup("Ubicación", h("input", { class: "form-input", name: "location", value: ev.location, required: "true" })),
-    formGroup("URL de imagen", h("input", { class: "form-input", name: "image_url", type: "url", value: ev.image_url || "" })),
+    formGroup("URL de imagen", h("input", { class: "form-input", name: "image_url", type: "url", value: ev.image || "" })),
   ]);
 
   openModal("Editar Evento", form, [
