@@ -1,4 +1,4 @@
-const API_BASE = "https://mievento-api.up.railway.app/api";
+const API_BASE = "https://defensa-uwu-3.onrender.com/api";
 
 export async function apiRequest(path, options = {}) {
   const headers = {
