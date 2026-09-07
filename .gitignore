@@ -1,63 +1,24 @@
 # Dependencies
 node_modules/
-pnpm-lock.yaml
-yarn-lock.txt
 package-lock.json
 
-# Runtime
+# Env
 .env
 .env.local
-.env.development
-.env.development.local
-.env.test
-.env.test.local
+.env.*.local
 
-# Build outputs
-dist/
-/dist/
-/dist/app/
+# OS
+.DS_Store
+Thumbs.db
 
-# TypeScript
-*.tsbuildinfo
-*.tsbuildinfo
+# Logs
+*.log
+npm-debug.log*
 
 # IDE
 .vscode/
 .idea/
-*.swp
-*.swo
-*.suo
 
-# Vite
-/.vite
-
-# Production
-/.vercel
-/.github
-
-# Next.js
-/.next/
-/next/
-/out/
-
-# npm
-.npm
-
-# Rome
-.rome
-
-# Turborepo
-/turbo
-
-# Naïve UI
-.naiveui
-
-# Bun
-.bun
-
-# environment env files
-.env*
-
-# Base de datos local
-server/data.sqlite
-.vercel
+# Build (legacy React)
+dist/
+build/

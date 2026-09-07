@@ -1,149 +1,108 @@
-<div align="center">
-
-# 🎉 MiEvento
-
-### Full-Stack Event Management Platform · Ready to Launch
-
-**React 19 · TypeScript · Vite · Express · SQLite · Docker · PWA**
-
-Organize events, manage guests, track tasks and set reminders —
-with a beautiful themed dashboard, admin panel and a mobile-ready experience.
-
-[Features](#-features) · [Quick Start](#-quick-start) · [Screenshots](#-screenshots) · [Tech Stack](#-tech-stack) · [Documentation](#-documentation) · [License](#-license)
-
-</div>
-
----
-
-## ✨ Features
-
-**For end users**
-- 📅 **Events CRUD** — create, edit and browse events with images, dates and locations
-- 👥 **Guests & RSVP** — per-event guest lists with confirmation status
-- ✅ **Tasks & Reminders** — organize every event with checklists and alerts
-- 🗓️ **Mini calendar** — real-time calendar synced with upcoming events
-- 🔔 **Toast notifications** for every action (create / update / delete)
-- 🎨 **10 UI themes** (light, dark, pastel, sunset, ocean, sakura…) persisted per user
-- 📱 **Installable PWA** + splash screen — works like a native mobile app
-
-**For administrators**
-- 🛡️ **Double-layer security** — role checks in both API middleware *and* UI
-- 👤 **User management panel** — list accounts, promote/demote admins
-- 📊 **Global KPIs** — users, events, guests, tasks and reminders at a glance
-
-**Under the hood**
-- ⚡ REST API with **JWT auth**, scrypt password hashing and Zod input validation
-- 🚦 **Rate limiting** on auth endpoints + `helmet` security headers
-- 💾 **Zero-config SQLite** (via `node:sqlite` — no external database server needed)
-- 🐳 **One-command Docker deploy**
-- 🔒 Fail-fast secrets: refuses to boot in production without a proper `JWT_SECRET`
-
----
+# ============================================================
+# MiEvento v2.0 — Plataforma de Gestión de Eventos
+# ============================================================
+#
+# Stack:
+#   - Backend: Express 5 + Supabase (PostgreSQL)
+#   - Frontend: HTML5 + CSS3 + JavaScript/TypeScript (Vanilla ES Modules)
+#   - Auth: JWT (HS256) + scrypt password hashing
+#   - Seguridad: Helmet, Rate Limiting, Zod validation, RLS
+#
+# Despliegue: Docker o VPS (Node.js >= 20)
+# ============================================================
 
 ## 🚀 Quick Start
 
-### Option A — Docker (recommended)
-
+### 1. Clonar e instalar
 ```bash
-git clone https://github.com/YOUR_USERNAME/defensa-uwu.git mievento
+git clone https://github.com/tu-usuario/defensa-uwu.git mievento
 cd mievento
-docker compose up --build
-```
-
-| Service | URL |
-|---------|-----|
-| Web app | http://localhost:8080 |
-| REST API | http://localhost:3001/api/health |
-
-### Option B — Local development
-
-```bash
 npm install
-cp .env.example .env        # adjust values if you want
-npm run dev                 # starts Vite (5173) + API (3001) together
+cp .env.example .env   # Editar con tus valores
+npm start
 ```
 
-> Full production deployment guides (Vercel + Render, VPS, Docker) in [SETUP.md](./SETUP.md).
+### 2. Configurar Supabase
+1. Crear proyecto en [supabase.com](https://supabase.com)
+2. Ir a **SQL Editor** → ejecutar el contenido de `supabase.sql`
+3. Copiar URL y Service Role Key → pegar en `.env`
 
-### Default demo accounts
-
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | `maria@mievento.com` | `demo1234` |
-| User | `carlos@mievento.com` | `demo1234` |
-
-*Demo data is seeded automatically on first run. Hide the hint on the login screen with `VITE_SHOW_DEMO=false`.*
+### 3. Acceder
+- Web: <http://localhost:3001>
+- Admin: `maria@mievento.com` / `demo1234`
+- Usuario: `carlos@mievento.com` / `demo1234`
 
 ---
 
-## 📸 Screenshots
+## 🗄️ Base de Datos (Supabase)
 
-> 📍 Place your captures in `docs/screenshots/` and they will render here.
+El archivo **`supabase.sql`** contiene todo lo necesario:
 
-| Dashboard | Landing | Admin panel |
-|-----------|---------|-------------|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Landing](docs/screenshots/landing.png) | ![Admin](docs/screenshots/admin.png) |
+- **Tablas**: `users`, `events`, `guests`, `tasks`, `reminders`
+- **RLS (Row Level Security)**: políticas de seguridad por rol
+- **Índices**: optimización de consultas
+- **Trigger**: `updated_at` automático
+- **Seed data**: usuarios y eventos de demostración
+
+### Diagrama Entidad-Relación
+```
+users (1) ──< events (1) ──< guests
+                     ├──< tasks
+                     └──< reminders
+```
 
 ---
 
-## 🧱 Tech Stack
+## 🔐 API REST
 
-| Layer | Technology |
-|-------|------------|
-| Frontend | React 19, TypeScript, Vite, Tailwind CSS v4, shadcn/ui, Lucide icons |
-| Backend | Node.js ≥22.5, Express 5, SQLite (`node:sqlite`, zero external DB), Zod |
-| Auth | JWT (HMAC-SHA256) + scrypt password hashing + rate limiting |
-| Security | Helmet headers, double-layer RBAC, parameterized SQL |
-| Deploy | Docker / docker-compose, Vercel (web) + Render (API), any Node VPS |
-
-## 📖 Documentation
-
-| File | Contents |
-|------|----------|
-| [SETUP.md](./SETUP.md) | Step-by-step installation & production deployment |
-| [.env.example](./.env.example) | Every environment variable explained |
-| [SELLING-GUIDE.md](./SELLING-GUIDE.md) | Marketplace listing kit (pricing tiers, platforms) |
-| [CHANGELOG.md](./CHANGELOG.md) | Release history |
-
-## 🗂️ Project Structure
-
-```
-├── public/               # PWA assets served as-is (videos, favicon)
-├── src/
-│   ├── components/       # React components (dashboard, layout, ui/)
-│   ├── context/          # AuthContext (JWT session + roles)
-│   ├── pages/            # Landing · Dashboard · Login
-│   ├── lib/api.ts        # Typed REST client
-│   └── data/             # Static content helpers
-├── server/
-│   ├── routes/           # auth · events · guests · tasks · reminders · admin
-│   ├── db.js             # SQLite schema + auto-seed demo data
-│   └── index.js          # Express app (helmet · rate-limit · CORS)
-├── Dockerfile            # Production container
-└── docker-compose.yml    # One-command full stack
-```
-
-## 🔌 API Overview
-
-All endpoints are prefixed with `/api`. Authenticated requests require
-`Authorization: Bearer <token>`.
-
-| Method | Endpoint | Access |
+| Método | Endpoint | Acceso |
 |--------|----------|--------|
-| POST | `/api/auth/register` · `/api/auth/login` | public (rate-limited) |
-| GET | `/api/auth/me` | user |
-| GET/POST | `/api/events` | user |
-| PUT/PATCH/DELETE | `/api/events/:id` | owner / **admin** |
-| CRUD | `/api/events/:id/guests` · `/tasks` · `/reminders` | owner / **admin** |
-| GET | `/api/stats` | user |
-| GET/PATCH | `/api/admin/users` · `/users/:id/role` | **admin** |
-| GET | `/api/admin/overview` | **admin** |
+| POST | `/api/auth/register` | público |
+| POST | `/api/auth/login` | público |
+| GET | `/api/auth/me` | usuario |
+| GET/POST | `/api/events` | usuario |
+| GET/PATCH/DELETE | `/api/events/:id` | dueño / admin |
+| CRUD | `/api/events/:id/guests` | dueño / admin |
+| CRUD | `/api/events/:id/tasks` | dueño / admin |
+| CRUD | `/api/events/:id/reminders` | dueño / admin |
+| GET | `/api/stats` | usuario |
+| GET | `/api/admin/users` | admin |
+| GET | `/api/admin/overview` | admin |
+| PATCH | `/api/admin/users/:id/role` | admin |
 
-## 📄 License
+---
 
-Released under the [MIT License](./LICENSE).
+## 📁 Estructura del Proyecto
 
-## 🛒 Support
+```
+├── public/
+│   ├── css/styles.css      # Design system completo
+│   ├── js/
+│   │   ├── app.js          # Frontend SPA vanilla
+│   │   └── utils.js        # API client, router, DOM helpers
+│   ├── index.html          # Entry point
+│   └── favicon.svg
+├── server/
+│   └── index.js            # API Express + Supabase
+├── supabase.sql            # Schema + RLS + seed
+├── package.json
+├── Dockerfile
+└── docker-compose.yml
+```
 
-This product includes source code, documentation and demo seed data.
-For setup questions please refer to [SETUP.md](./SETUP.md).
+---
+
+## 🛡️ Seguridad
+
+- **JWT** con expiración de 7 días
+- **scrypt** password hashing (salt + hash)
+- **Rate limiting**: 20 intentos/auth por IP / 15 min
+- **Helmet** headers (CSP desactivado para la SPA)
+- **RLS** en Supabase: usuarios solo ven sus propios datos
+- **Zod** validación de inputs en todas las rutas
+
+---
+
+## 📄 Licencia
+
+MIT License — libre uso y modificación.
