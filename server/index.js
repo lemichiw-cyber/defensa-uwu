@@ -8,6 +8,10 @@ import crypto from "node:crypto";
 import { SignJWT, jwtVerify } from "jose";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import WebSocket from "ws";
+
+// Polyfill WebSocket for Node.js < 22
+globalThis.WebSocket = WebSocket;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -48,15 +52,10 @@ function hashEmail(email) {
   return crypto.createHash("sha256").update(email.toLowerCase()).digest("hex");
 }
 
-// ── Supabase (sin realtime para evitar WebSocket) ────────
+// ── Supabase ──────────────────────────────────────────────
 const supabase = createClient(
   process.env.SUPABASE_URL ?? "http://localhost:54321",
-  process.env.SUPABASE_SERVICE_ROLE_KEY ?? "service-role-key",
-  {
-    realtime: {
-      params: { eventsPerSecond: 0 }
-    }
-  }
+  process.env.SUPABASE_SERVICE_ROLE_KEY ?? "service-role-key"
 );
 
 // ── JWT ───────────────────────────────────────────────────
